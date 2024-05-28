@@ -18,10 +18,10 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    _initializeControllerFuture = _initializeCamera();
   }
 
-  void _initializeCamera() async {
+  Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     final firstCamera = cameras.first;
 
@@ -30,8 +30,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
       ResolutionPreset.high,
     );
 
-    _initializeControllerFuture = _controller.initialize();
-    setState(() {});
+    await _controller.initialize();
   }
 
   @override
@@ -53,7 +52,6 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
         ),
       );
     } catch (e) {
-      // Use a logging framework in production
       developer.log('Error taking picture: $e');
     }
   }

@@ -11,26 +11,35 @@ class RegisterScreen extends StatelessWidget {
           'Register',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        // centerTitle: false,
+        centerTitle: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Already have an account?',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            TextButton(
-              onPressed: () {
-                // Navigate to the sign in screen
-                // TODO: Implement navigation to sign in screen
-              },
-              child: Text(
-                'Sign in',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Already have an account?',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to the sign in screen
+                    // TODO: Implement navigation to sign in screen
+                  },
+                  child: Text(
+                    'Sign in',
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                  ),
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).colorScheme.primary),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16.0),
             TextField(
@@ -64,10 +73,14 @@ class RegisterScreen extends StatelessWidget {
                 // Perform registration
                 // TODO: Implement registration logic
               },
-              icon: const Icon(Icons.app_registration),
+              icon: const Icon(Icons.app_registration, color: Colors.white),
               label: Text(
                 'Register',
-                style: Theme.of(context).textTheme.labelLarge,
+                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              ),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).colorScheme.primary),
               ),
             ),
           ],
