@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wil_doc/screens/auth/register_screen.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
 import 'package:wil_doc/utils/theme.dart';
 

@@ -11,7 +11,7 @@ class RegisterScreen extends StatelessWidget {
           'Register',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        centerTitle: false,
+        // centerTitle: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -35,7 +35,7 @@ class RegisterScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             TextField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 labelText: 'Email',
                 labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -44,7 +44,7 @@ class RegisterScreen extends StatelessWidget {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 labelText: 'Password',
                 labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -53,7 +53,7 @@ class RegisterScreen extends StatelessWidget {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 labelText: 'Confirm password',
                 labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -64,7 +64,7 @@ class RegisterScreen extends StatelessWidget {
                 // Perform registration
                 // TODO: Implement registration logic
               },
-              icon: Icon(Icons.app_registration),
+              icon: const Icon(Icons.app_registration),
               label: Text(
                 'Register',
                 style: Theme.of(context).textTheme.labelLarge,
