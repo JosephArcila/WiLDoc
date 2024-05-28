@@ -7,51 +7,68 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text(
+          'Register',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        centerTitle: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Already have an account?',
-              style: TextStyle(fontSize: 18.0),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             TextButton(
               onPressed: () {
                 // Navigate to the sign in screen
                 // TODO: Implement navigation to sign in screen
               },
-              child: const Text('Sign in'),
+              child: Text(
+                'Sign in',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             ),
             const SizedBox(height: 16.0),
-            const TextField(
+            TextField(
               decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: 'Email',
+                labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 16.0),
-            const TextField(
+            TextField(
               obscureText: true,
               decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: 'Password',
+                labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 16.0),
-            const TextField(
+            TextField(
               obscureText: true,
               decoration: InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: 'Confirm password',
+                labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             const SizedBox(height: 24.0),
-            ElevatedButton(
+            FilledButton.icon(
               onPressed: () {
                 // Perform registration
                 // TODO: Implement registration logic
               },
-              child: const Text('Register'),
+              icon: Icon(Icons.app_registration),
+              label: Text(
+                'Register',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             ),
           ],
         ),

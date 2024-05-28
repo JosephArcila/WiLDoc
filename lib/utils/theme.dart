@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'util.dart';
 
-final ThemeData lightHighContrastTheme = const MaterialTheme(TextTheme()).lightHighContrast();
+final ThemeData lightHighContrastTheme = ThemeData(
+  useMaterial3: true,
+  colorScheme: MaterialTheme.lightHighContrastScheme().toColorScheme(),
+  textTheme: createTextTheme().apply(
+    bodyColor: MaterialTheme.lightHighContrastScheme().onSurface,
+    displayColor: MaterialTheme.lightHighContrastScheme().onSurface,
+  ),
+);
 
 class MaterialTheme {
   final TextTheme textTheme;
@@ -181,7 +189,17 @@ class MaterialTheme {
   }
 
   ThemeData lightHighContrast() {
-    return theme(lightHighContrastScheme().toColorScheme());
+    return ThemeData(
+      useMaterial3: true,
+      brightness: lightHighContrastScheme().brightness,
+      colorScheme: lightHighContrastScheme().toColorScheme(),
+      textTheme: createTextTheme().apply(
+        bodyColor: lightHighContrastScheme().onSurface,
+        displayColor: lightHighContrastScheme().onSurface,
+      ),
+      scaffoldBackgroundColor: lightHighContrastScheme().surface,
+      canvasColor: lightHighContrastScheme().surface,
+    );
   }
 
   static MaterialScheme darkScheme() {
@@ -554,4 +572,3 @@ class ColorFamily {
   final Color colorContainer;
   final Color onColorContainer;
 }
- 
