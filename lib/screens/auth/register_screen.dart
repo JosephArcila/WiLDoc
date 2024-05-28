@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wil_doc/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -27,8 +28,10 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Navigate to the sign in screen
-                    // TODO: Implement navigation to sign in screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    );
                   },
                   child: Text(
                     'Sign in',
@@ -67,7 +70,7 @@ class RegisterScreen extends StatelessWidget {
                 labelStyle: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-            const SizedBox(height: 24.0),
+            const Spacer(),
             FilledButton.icon(
               onPressed: () {
                 // Perform registration
@@ -83,6 +86,7 @@ class RegisterScreen extends StatelessWidget {
                     Theme.of(context).colorScheme.primary),
               ),
             ),
+            const SizedBox(height: 16.0),
           ],
         ),
       ),
