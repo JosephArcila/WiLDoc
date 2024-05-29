@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wil_doc/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wil_doc/widgets/custom_text_field.dart'; // Import the custom text field
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -53,8 +54,6 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final errorColor = theme.colorScheme.error;
-    final onErrorColor = theme.colorScheme.onSurface;
 
     return Scaffold(
       appBar: AppBar(
@@ -65,23 +64,11 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
+            CustomTextField(
               controller: _emailController,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Email',
-                errorText: _emailError,
-                errorStyle: TextStyle(color: errorColor),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                labelStyle: TextStyle(color: _emailError != null ? errorColor : null),
-              ),
-              style: TextStyle(color: onErrorColor),
-              cursorColor: errorColor,
+              labelText: 'Email',
+              errorText: _emailError,
+              keyboardType: TextInputType.emailAddress,
             ),
             const Spacer(),
             FilledButton.icon(
