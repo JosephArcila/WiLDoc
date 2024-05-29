@@ -16,29 +16,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  void _register() async {
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmPasswordError;
+
+  Future<void> _register() async {
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+      _confirmPasswordError = null;
+    });
+
     if (_passwordController.text == _confirmPasswordController.text) {
-      User? user = await _auth.registerWithEmailAndPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-      if (user != null) {
-        if (mounted) {
+      try {
+        User? user = await _auth.registerWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+        );
+        if (user != null && mounted) {
           Navigator.pop(context);
         }
-      } else {
-        // Show error message
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        setState(() {
+          switch (e.code) {
+            case 'email-already-in-use':
+              _emailError = 'Email already in use. Use another or login.';
+              break;
+            case 'weak-password':
+              _passwordError = 'Password too weak. Use a stronger password.';
+              break;
+            case 'invalid-email':
+              _emailError = 'Invalid email address. Check and try again.';
+              break;
+            default:
+              _emailError = 'Registration failed. ${e.message}';
+          }
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _emailError = 'Unexpected error: $e';
+        });
       }
     } else {
-      // Show error message for password mismatch
+      setState(() {
+        _confirmPasswordError = 'Passwords do not match. Re-enter passwords.';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final errorColor = theme.colorScheme.error;
+    final onSurfaceColor = theme.colorScheme.onSurface;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register', style: Theme.of(context).textTheme.titleLarge),
+        title: Text('Register', style: theme.textTheme.titleLarge),
         centerTitle: false,
       ),
       body: Padding(
@@ -49,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Already have an account?', style: Theme.of(context).textTheme.bodyLarge),
+                Text('Already have an account?', style: theme.textTheme.bodyLarge),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -57,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MaterialPageRoute(builder: (context) => const LoginScreen()),
                     );
                   },
-                  child: Text('Sign in', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                  child: Text('Sign in', style: TextStyle(color: theme.colorScheme.primary)),
                 ),
               ],
             ),
@@ -67,8 +103,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Email',
-                labelStyle: Theme.of(context).textTheme.bodyLarge,
+                errorText: _emailError,
+                errorMaxLines: 2, // Allow error message to wrap to multiple lines
+                errorStyle: TextStyle(color: errorColor),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                labelStyle: TextStyle(color: _emailError != null ? errorColor : onSurfaceColor),
               ),
+              style: TextStyle(color: onSurfaceColor),
             ),
             const SizedBox(height: 16.0),
             TextField(
@@ -77,8 +123,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Password',
-                labelStyle: Theme.of(context).textTheme.bodyLarge,
+                errorText: _passwordError,
+                errorMaxLines: 2, // Allow error message to wrap to multiple lines
+                errorStyle: TextStyle(color: errorColor),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                labelStyle: TextStyle(color: _passwordError != null ? errorColor : onSurfaceColor),
               ),
+              style: TextStyle(color: onSurfaceColor),
             ),
             const SizedBox(height: 16.0),
             TextField(
@@ -87,14 +143,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Confirm password',
-                labelStyle: Theme.of(context).textTheme.bodyLarge,
+                errorText: _confirmPasswordError,
+                errorMaxLines: 2, // Allow error message to wrap to multiple lines
+                errorStyle: TextStyle(color: errorColor),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                labelStyle: TextStyle(color: _confirmPasswordError != null ? errorColor : onSurfaceColor),
               ),
+              style: TextStyle(color: onSurfaceColor),
             ),
             const Spacer(),
             FilledButton.icon(
               onPressed: _register,
               icon: const Icon(Icons.app_registration, color: Colors.white),
-              label: Text('Register', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+              label: Text('Register', style: TextStyle(color: theme.colorScheme.onPrimary)),
             ),
             const SizedBox(height: 16.0),
           ],

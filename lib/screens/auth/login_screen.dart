@@ -16,7 +16,15 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  String? _emailError;
+  String? _passwordError;
+
   Future<void> _signIn() async {
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+    });
+
     try {
       await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
@@ -28,22 +36,39 @@ class LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => const ScanDocumentScreen()),
         );
       }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        switch (e.code) {
+          case 'user-not-found':
+            _emailError = 'No user found for that email. Check email or register.';
+            break;
+          case 'wrong-password':
+            _passwordError = 'Incorrect password. Try again or reset.';
+            break;
+          default:
+            _emailError = 'Sign-in failed. ${e.message}';
+        }
+      });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to sign in: ${e.toString()}')),
-        );
-      }
+      if (!mounted) return;
+      setState(() {
+        _emailError = 'Unexpected error: $e';
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final errorColor = theme.colorScheme.error;
+    final onErrorColor = theme.colorScheme.onSurface;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Sign In',
-          style: Theme.of(context).textTheme.titleLarge,
+          style: theme.textTheme.titleLarge,
         ),
         centerTitle: false,
       ),
@@ -57,7 +82,7 @@ class LoginScreenState extends State<LoginScreen> {
               children: [
                 Text(
                   'Don\'t have an account?',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: theme.textTheme.bodyLarge,
                 ),
                 TextButton(
                   onPressed: () {
@@ -68,7 +93,7 @@ class LoginScreenState extends State<LoginScreen> {
                   },
                   child: Text(
                     'Register',
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                    style: TextStyle(color: theme.colorScheme.primary),
                   ),
                 ),
               ],
@@ -79,8 +104,19 @@ class LoginScreenState extends State<LoginScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Email',
-                labelStyle: Theme.of(context).textTheme.bodyLarge,
+                errorText: _emailError,
+                errorMaxLines: 2, // Allow error message to wrap to multiple lines
+                errorStyle: TextStyle(color: errorColor),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                labelStyle: TextStyle(color: _emailError != null ? errorColor : null),
               ),
+              style: TextStyle(color: onErrorColor),
+              cursorColor: errorColor,
             ),
             const SizedBox(height: 16.0),
             TextField(
@@ -89,8 +125,19 @@ class LoginScreenState extends State<LoginScreen> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Password',
-                labelStyle: Theme.of(context).textTheme.bodyLarge,
+                errorText: _passwordError,
+                errorMaxLines: 2, // Allow error message to wrap to multiple lines
+                errorStyle: TextStyle(color: errorColor),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: errorColor),
+                ),
+                labelStyle: TextStyle(color: _passwordError != null ? errorColor : null),
               ),
+              style: TextStyle(color: onErrorColor),
+              cursorColor: errorColor,
             ),
             const SizedBox(height: 16.0),
             Align(
@@ -104,7 +151,7 @@ class LoginScreenState extends State<LoginScreen> {
                 },
                 child: Text(
                   'Forgotten password?',
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                  style: TextStyle(color: theme.colorScheme.primary),
                 ),
               ),
             ),
@@ -113,11 +160,7 @@ class LoginScreenState extends State<LoginScreen> {
               icon: const Icon(Icons.login, color: Colors.white),
               label: Text(
                 'Sign In',
-                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-              ),
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all<Color>(
-                    Theme.of(context).colorScheme.primary),
+                style: TextStyle(color: theme.colorScheme.onPrimary),
               ),
               onPressed: _signIn,
             ),

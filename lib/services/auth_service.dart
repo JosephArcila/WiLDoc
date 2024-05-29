@@ -9,9 +9,14 @@ class AuthService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
       return user;
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('Error: ${e.message}');
+      }
+      rethrow;
     } catch (e) {
       if (kDebugMode) {
-        print(e.toString());
+        print('Unexpected error: $e');
       }
       return null;
     }
@@ -22,9 +27,14 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
       return user;
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('Error: ${e.message}');
+      }
+      rethrow;
     } catch (e) {
       if (kDebugMode) {
-        print(e.toString());
+        print('Unexpected error: $e');
       }
       return null;
     }
@@ -33,9 +43,14 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('Error: ${e.message}');
+      }
+      rethrow;
     } catch (e) {
       if (kDebugMode) {
-        print(e.toString());
+        print('Unexpected error: $e');
       }
     }
   }
@@ -43,9 +58,14 @@ class AuthService {
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('Error: ${e.message}');
+      }
+      rethrow;
     } catch (e) {
       if (kDebugMode) {
-        print(e.toString());
+        print('Unexpected error: $e');
       }
     }
   }

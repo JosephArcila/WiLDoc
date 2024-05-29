@@ -14,7 +14,7 @@ class ScanDocumentScreen extends StatefulWidget {
 }
 
 class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
-  late CameraController _controller;
+  CameraController? _controller;
   late Future<void> _initializeControllerFuture;
 
   @override
@@ -24,28 +24,36 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   }
 
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
+    try {
+      final cameras = await availableCameras();
+      final backCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
 
-    _controller = CameraController(
-      firstCamera,
-      ResolutionPreset.high,
-    );
+      _controller = CameraController(
+        backCamera,
+        ResolutionPreset.high,
+      );
 
-    await _controller.initialize();
+      await _controller!.initialize();
+      setState(() {});  // Refresh the UI after initializing the camera
+    } catch (e) {
+      developer.log('Error initializing camera: $e');
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   void _takePicture() async {
     try {
       await _initializeControllerFuture;
-      if (!mounted) return;
-      final image = await _controller.takePicture();
+      if (!mounted || _controller == null) return;
+      final image = await _controller!.takePicture();
       if (!mounted) return;
       Navigator.push(
         context,
@@ -90,12 +98,15 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
+            if (_controller == null || !_controller!.value.isInitialized) {
+              return const Center(child: Text('Error initializing camera'));
+            }
             return Stack(
               children: [
                 Positioned.fill(
                   child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: CameraPreview(_controller),
+                    aspectRatio: _controller!.value.aspectRatio,
+                    child: CameraPreview(_controller!),
                   ),
                 ),
               ],
