@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:wil_doc/screens/auth/register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wil_doc/screens/auth/account_screen.dart';
+import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/screens/document/document_preview_screen.dart';
 import 'dart:developer' as developer;
 
@@ -56,6 +58,21 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
     }
   }
 
+  void _navigateToAccountOrLogin() {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AccountScreen()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,12 +82,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RegisterScreen()),
-              );
-            },
+            onPressed: _navigateToAccountOrLogin,
           ),
         ],
       ),

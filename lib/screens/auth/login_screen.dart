@@ -1,7 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:wil_doc/screens/auth/register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wil_doc/screens/home/scan_document_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  LoginScreenState createState() => LoginScreenState();
+}
+
+class LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _signIn() async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ScanDocumentScreen()),
+        );
+      }
+    } catch (e) {
+      // Handle sign-in error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to sign in: ${e.toString()}')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +61,21 @@ class LoginScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    );
                   },
                   child: Text(
                     'Register',
                     style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                  ),
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).colorScheme.primary),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16.0),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Email',
@@ -50,6 +84,7 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
@@ -72,19 +107,16 @@ class LoginScreen extends StatelessWidget {
             ),
             const Spacer(),
             FilledButton.icon(
-              onPressed: () {
-                // Perform sign in
-                // TODO: Implement sign in logic
-              },
               icon: const Icon(Icons.login, color: Colors.white),
               label: Text(
                 'Sign In',
                 style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
               ),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
+                backgroundColor: WidgetStateProperty.all<Color>(
                     Theme.of(context).colorScheme.primary),
               ),
+              onPressed: _signIn,
             ),
             const SizedBox(height: 16.0),
           ],
