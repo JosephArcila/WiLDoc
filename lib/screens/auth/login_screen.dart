@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wil_doc/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
+import 'package:wil_doc/screens/auth/reset_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,7 +29,6 @@ class LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      // Handle sign-in error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to sign in: ${e.toString()}')),
@@ -97,7 +97,10 @@ class LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
-                  // Handle forgotten password
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
+                  );
                 },
                 child: Text(
                   'Forgotten password?',

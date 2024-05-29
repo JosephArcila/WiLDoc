@@ -52,7 +52,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text('Already have an account?', style: Theme.of(context).textTheme.bodyLarge),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    );
                   },
                   child: Text('Sign in', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                 ),
