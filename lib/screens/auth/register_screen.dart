@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/services/auth_service.dart';
+import 'package:wil_doc/widgets/custom_text_field.dart'; // Import the custom text field
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -69,8 +70,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final errorColor = theme.colorScheme.error;
-    final onSurfaceColor = theme.colorScheme.onSurface;
 
     return Scaffold(
       appBar: AppBar(
@@ -98,63 +97,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
             const SizedBox(height: 16.0),
-            TextField(
+            CustomTextField(
               controller: _emailController,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Email',
-                errorText: _emailError,
-                errorMaxLines: 2, // Allow error message to wrap to multiple lines
-                errorStyle: TextStyle(color: errorColor),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                labelStyle: TextStyle(color: _emailError != null ? errorColor : onSurfaceColor),
-              ),
-              style: TextStyle(color: onSurfaceColor),
+              labelText: 'Email',
+              errorText: _emailError,
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16.0),
-            TextField(
+            CustomTextField(
               controller: _passwordController,
+              labelText: 'Password',
+              errorText: _passwordError,
               obscureText: true,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Password',
-                errorText: _passwordError,
-                errorMaxLines: 2, // Allow error message to wrap to multiple lines
-                errorStyle: TextStyle(color: errorColor),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                labelStyle: TextStyle(color: _passwordError != null ? errorColor : onSurfaceColor),
-              ),
-              style: TextStyle(color: onSurfaceColor),
             ),
             const SizedBox(height: 16.0),
-            TextField(
+            CustomTextField(
               controller: _confirmPasswordController,
+              labelText: 'Confirm password',
+              errorText: _confirmPasswordError,
               obscureText: true,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Confirm password',
-                errorText: _confirmPasswordError,
-                errorMaxLines: 2, // Allow error message to wrap to multiple lines
-                errorStyle: TextStyle(color: errorColor),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-                labelStyle: TextStyle(color: _confirmPasswordError != null ? errorColor : onSurfaceColor),
-              ),
-              style: TextStyle(color: onSurfaceColor),
             ),
             const Spacer(),
             FilledButton.icon(
