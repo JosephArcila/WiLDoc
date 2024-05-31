@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
-import 'package:wil_doc/utils/web_view_factory.dart';  // Import the web view factory
+import 'package:wil_doc/routes/app_routes.dart';
+import 'package:wil_doc/utils/web_view_factory.dart';
 import 'dart:developer' as developer;
 
 class ScanDocumentScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
       Navigator.pushNamed(
         context,
         AppRoutes.documentPreview,
-        arguments: {'imagePath': imageDataUrl}, // Pass arguments
+        arguments: {'imagePath': imageDataUrl},
       );
     } catch (e) {
       developer.log('Error taking picture: $e');
@@ -34,9 +34,9 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   void _navigateToAccountOrLogin() {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      Navigator.pushNamed(context, AppRoutes.account); // Use named route
+      Navigator.pushNamed(context, AppRoutes.account);
     } else {
-      Navigator.pushNamed(context, AppRoutes.login); // Use named route
+      Navigator.pushNamed(context, AppRoutes.login);
     }
   }
 
