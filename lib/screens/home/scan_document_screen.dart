@@ -15,6 +15,19 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkProfileCompletion());
+  }
+
+  void _checkProfileCompletion() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Here you would check if the user's profile is complete
+      // For this example, we assume the profile is incomplete
+      bool isProfileComplete = false; // This should be fetched from your backend
+      if (!isProfileComplete) {
+        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      }
+    }
   }
 
   void _takePicture() async {
