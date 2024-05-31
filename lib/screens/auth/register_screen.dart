@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/screens/auth/login_screen.dart';
+import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
 import 'package:wil_doc/services/auth_service.dart';
-import 'package:wil_doc/widgets/custom_text_field.dart'; // Import the custom text field
+import 'package:wil_doc/widgets/custom_text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -87,10 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text('Already have an account?', style: theme.textTheme.bodyLarge),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    );
+                    Navigator.pushReplacementNamed(context, AppRoutes.login); // Use named route
                   },
                   child: Text('Sign in', style: TextStyle(color: theme.colorScheme.primary)),
                 ),

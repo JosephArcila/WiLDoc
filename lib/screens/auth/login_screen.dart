@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wil_doc/screens/auth/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/screens/home/scan_document_screen.dart';
-import 'package:wil_doc/screens/auth/reset_password_screen.dart';
-import 'package:wil_doc/widgets/custom_text_field.dart'; // Import the custom text field
+import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
+import 'package:wil_doc/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,10 +30,7 @@ class LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ScanDocumentScreen()),
-        );
+        Navigator.pushReplacementNamed(context, AppRoutes.scanDocument); // Use named route
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -85,10 +80,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                    );
+                    Navigator.pushReplacementNamed(context, AppRoutes.register); // Use named route
                   },
                   child: Text(
                     'Register',
@@ -116,10 +108,7 @@ class LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
-                  );
+                  Navigator.pushNamed(context, AppRoutes.resetPassword); // Use named route
                 },
                 child: Text(
                   'Forgotten password?',

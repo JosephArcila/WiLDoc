@@ -41,7 +41,8 @@ class AppRoutes {
       case scanDocument:
         return MaterialPageRoute(builder: (_) => const ScanDocumentScreen());
       case documentPreview:
-        return MaterialPageRoute(builder: (_) => const DocumentPreviewScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePath: args['imagePath']));
       case documentSummary:
         return MaterialPageRoute(builder: (_) => const DocumentSummaryScreen());
       case documentTranslation:

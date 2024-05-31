@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/screens/auth/account_screen.dart';
-import 'package:wil_doc/screens/auth/login_screen.dart';
-import 'package:wil_doc/screens/document/document_preview_screen.dart';
+import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
 import 'package:wil_doc/utils/web_view_factory.dart';  // Import the web view factory
 import 'dart:developer' as developer;
 
@@ -23,11 +21,10 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
     try {
       final imageDataUrl = await captureFrame();
       if (!mounted) return;
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => DocumentPreviewScreen(imagePath: imageDataUrl),
-        ),
+        AppRoutes.documentPreview,
+        arguments: {'imagePath': imageDataUrl}, // Pass arguments
       );
     } catch (e) {
       developer.log('Error taking picture: $e');
@@ -37,15 +34,9 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   void _navigateToAccountOrLogin() {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const AccountScreen()),
-      );
+      Navigator.pushNamed(context, AppRoutes.account); // Use named route
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      Navigator.pushNamed(context, AppRoutes.login); // Use named route
     }
   }
 
@@ -53,6 +44,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Remove the back button
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('WiLDoc'),
         actions: [

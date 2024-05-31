@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/services/auth_service.dart';
+import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -16,10 +16,7 @@ class AccountScreenState extends State<AccountScreen> {
   void _signOut() async {
     await _authService.signOut();
     if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.login); // Use named route
     }
   }
 
