@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class DocumentsScreen extends StatelessWidget {
-  const DocumentsScreen({super.key});
+class OnboardingScreen extends StatelessWidget {
+  const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Documents'),
+        title: const Text('Onboarding'),
       ),
       body: const Center(
-        child: Text('This is the documents screen.'),
+        child: Text('Welcome to the onboarding screen!'),
       ),
     );
   }

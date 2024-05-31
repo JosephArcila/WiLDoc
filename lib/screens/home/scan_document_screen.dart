@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/screens/auth/account_screen.dart';
 import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/screens/document/document_preview_screen.dart';
+import 'package:wil_doc/utils/web_view_factory.dart';  // Import the web view factory
 import 'dart:developer' as developer;
 
 class ScanDocumentScreen extends StatefulWidget {
@@ -14,56 +14,19 @@ class ScanDocumentScreen extends StatefulWidget {
 }
 
 class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
-  CameraController? _controller;
-  late Future<void> _initializeControllerFuture;
-
   @override
   void initState() {
     super.initState();
-    _initializeControllerFuture = _initializeCamera();
-  }
-
-  Future<void> _initializeCamera() async {
-    try {
-      final cameras = await availableCameras();
-      if (cameras.isEmpty) {
-        developer.log('No cameras available.');
-        return;
-      }
-      final backCamera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.back,
-        orElse: () => cameras.first,
-      );
-
-      _controller = CameraController(
-        backCamera,
-        ResolutionPreset.high,
-      );
-
-      await _controller!.initialize();
-      setState(() {});  // Refresh the UI after initializing the camera
-      developer.log('Camera initialized successfully.');
-    } catch (e) {
-      developer.log('Error initializing camera: $e');
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
   }
 
   void _takePicture() async {
     try {
-      await _initializeControllerFuture;
-      if (!mounted || _controller == null) return;
-      final image = await _controller!.takePicture();
+      final imageDataUrl = await captureFrame();
       if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DocumentPreviewScreen(imagePath: image.path),
+          builder: (context) => DocumentPreviewScreen(imagePath: imageDataUrl),
         ),
       );
     } catch (e) {
@@ -99,27 +62,10 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (_controller == null || !_controller!.value.isInitialized) {
-              return const Center(child: Text('Error initializing camera'));
-            }
-            return Stack(
-              children: [
-                Positioned.fill(
-                  child: AspectRatio(
-                    aspectRatio: _controller!.value.aspectRatio,
-                    child: CameraPreview(_controller!),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+      body: const Center(
+        child: SizedBox.expand(
+          child: HtmlElementView(viewType: 'plugins.flutter.io/camera_1'),
+        ),
       ),
       floatingActionButton: FloatingActionButton.large(
         onPressed: _takePicture,
