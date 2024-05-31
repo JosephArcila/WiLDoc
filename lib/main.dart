@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
 import 'package:wil_doc/utils/theme.dart';
+import 'package:wil_doc/utils/web_view_factory.dart';  // Import the web view factory
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +17,10 @@ void main() async {
       measurementId: "G-0PPQWPM7DD",
     ),
   );
+
+  // Register the camera plugin view
+  registerWebViewFactory();
+
   runApp(const MyApp());
 }
 

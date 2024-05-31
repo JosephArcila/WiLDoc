@@ -26,6 +26,10 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   Future<void> _initializeCamera() async {
     try {
       final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        developer.log('No cameras available.');
+        return;
+      }
       final backCamera = cameras.firstWhere(
         (camera) => camera.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
@@ -38,6 +42,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
 
       await _controller!.initialize();
       setState(() {});  // Refresh the UI after initializing the camera
+      developer.log('Camera initialized successfully.');
     } catch (e) {
       developer.log('Error initializing camera: $e');
     }
