@@ -284,5 +284,9 @@ const List<String> prefectureList = [
 
 // List of Japanese proficiency levels
 const List<String> proficiencyList = [
-  'Beginner', 'Intermediate', 'Advanced', 'Native'
+  'JLPT N5 (Beginner)',
+  'JLPT N4 (Elementary)',
+  'JLPT N3 (Intermediate)',
+  'JLPT N2 (Pre-advanced)',
+  'JLPT N1 (Advanced)',
 ];
