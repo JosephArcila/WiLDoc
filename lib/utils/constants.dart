@@ -200,8 +200,35 @@ const List<String> nationalityList = [
 
 // List of visa statuses
 const List<String> visaStatusList = [
-  'Student', 'Work', 'Dependent', 'Permanent Resident'
+  'Diplomat',
+  'Official',
+  'Professor',
+  'Artist',
+  'Religious Activities',
+  'Journalist',
+  'Investor/Business Manager',
+  'Legal/Accounting Services',
+  'Medical Services',
+  'Researcher',
+  'Instructor',
+  'Engineer/Specialist in Humanities/International Services',
+  'Intra-company Transferee',
+  'Nursing Care',
+  'Entertainer',
+  'Skilled Labor',
+  'Technical Intern Training',
+  'Cultural Activities',
+  'Student',
+  'Trainee',
+  'Dependent',
+  'Designated Activities',
+  'Temporary Visitor',
+  'Spouse or Child of Japanese National',
+  'Spouse or Child of Permanent Resident',
+  'Long-term Resident',
+  'Permanent Resident'
 ];
+
 
 // List of prefectures
 const List<String> prefectureList = [
