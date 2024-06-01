@@ -71,16 +71,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CustomTextField(
-              controller: _fullNameController,
-              labelText: 'Full Name',
-            ),
+            FullNameField(controller: _fullNameController),
             const SizedBox(height: 16.0),
-            CustomDropdownMenu<String>(
+            NationalityDropdown(
               controller: _nationalityController,
-              labelText: 'Nationality',
-              items: nationalityList,
-              selectedValue: selectedNationality,
+              selectedNationality: selectedNationality,
               onSelected: (String? nationality) {
                 setState(() {
                   selectedNationality = nationality;
@@ -88,11 +83,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
             ),
             const SizedBox(height: 16.0),
-            CustomDropdownMenu<String>(
+            VisaStatusDropdown(
               controller: _visaStatusController,
-              labelText: 'Visa Status',
-              items: visaStatusList,
-              selectedValue: selectedVisaStatus,
+              selectedVisaStatus: selectedVisaStatus,
               onSelected: (String? visaStatus) {
                 setState(() {
                   selectedVisaStatus = visaStatus;
@@ -100,26 +93,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
             ),
             const SizedBox(height: 16.0),
-            GestureDetector(
-              onTap: () => _selectVisaExpiration(context),
-              child: AbsorbPointer(
-                child: TextFormField(
-                  controller: _visaExpirationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Visa Expiration',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                ),
-              ),
+            VisaExpirationField(
+              controller: _visaExpirationController,
+              selectVisaExpiration: () => _selectVisaExpiration(context),
             ),
             const SizedBox(height: 16.0),
-            CustomDropdownMenu<String>(
+            PrefectureDropdown(
               controller: _prefectureController,
-              labelText: 'Prefecture',
-              items: prefectureList,
-              selectedValue: selectedPrefecture,
+              selectedPrefecture: selectedPrefecture,
               onSelected: (String? prefecture) {
                 setState(() {
                   selectedPrefecture = prefecture;
@@ -128,25 +109,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
             ),
             const SizedBox(height: 16.0),
-            CustomDropdownMenu<String>(
+            WardDropdown(
               controller: _wardController,
-              labelText: 'Ward',
-              items: selectedPrefecture != null ? getWardList(selectedPrefecture!) : [],
-              selectedValue: selectedWard,
+              selectedPrefecture: selectedPrefecture,
+              selectedWard: selectedWard,
               onSelected: (String? ward) {
                 setState(() {
                   selectedWard = ward;
                 });
               },
-              menuHeight: 200.0,
-              enabled: selectedPrefecture != null,
+              getWardList: getWardList,
             ),
             const SizedBox(height: 16.0),
-            CustomDropdownMenu<String>(
+            ProficiencyDropdown(
               controller: _japaneseProficiencyController,
-              labelText: 'Japanese Proficiency',
-              items: proficiencyList,
-              selectedValue: selectedProficiency,
+              selectedProficiency: selectedProficiency,
               onSelected: (String? proficiency) {
                 setState(() {
                   selectedProficiency = proficiency;
@@ -154,15 +131,196 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
             ),
             const Spacer(),
-            FilledButton.icon(
-              onPressed: _completeProfile,
-              icon: const Icon(Icons.done, color: Colors.white),
-              label: Text('Finish', style: TextStyle(color: theme.colorScheme.onPrimary)),
-            ),
+            FinishButton(onPressed: _completeProfile),
             const SizedBox(height: 16.0),
           ],
         ),
       ),
+    );
+  }
+}
+
+class FullNameField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const FullNameField({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomTextField(
+      controller: controller,
+      labelText: 'Full Name',
+    );
+  }
+}
+
+class NationalityDropdown extends StatelessWidget {
+  final TextEditingController controller;
+  final String? selectedNationality;
+  final ValueChanged<String?> onSelected;
+
+  const NationalityDropdown({
+    super.key,
+    required this.controller,
+    required this.selectedNationality,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDropdownMenu<String>(
+      controller: controller,
+      labelText: 'Nationality',
+      items: nationalityList,
+      selectedValue: selectedNationality,
+      onSelected: onSelected,
+    );
+  }
+}
+
+class VisaStatusDropdown extends StatelessWidget {
+  final TextEditingController controller;
+  final String? selectedVisaStatus;
+  final ValueChanged<String?> onSelected;
+
+  const VisaStatusDropdown({
+    super.key,
+    required this.controller,
+    required this.selectedVisaStatus,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDropdownMenu<String>(
+      controller: controller,
+      labelText: 'Visa Status',
+      items: visaStatusList,
+      selectedValue: selectedVisaStatus,
+      onSelected: onSelected,
+    );
+  }
+}
+
+class VisaExpirationField extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback selectVisaExpiration;
+
+  const VisaExpirationField({
+    super.key,
+    required this.controller,
+    required this.selectVisaExpiration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: selectVisaExpiration,
+      child: AbsorbPointer(
+        child: TextFormField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Visa Expiration',
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+            suffixIcon: Icon(Icons.calendar_today),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PrefectureDropdown extends StatelessWidget {
+  final TextEditingController controller;
+  final String? selectedPrefecture;
+  final ValueChanged<String?> onSelected;
+
+  const PrefectureDropdown({
+    super.key,
+    required this.controller,
+    required this.selectedPrefecture,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDropdownMenu<String>(
+      controller: controller,
+      labelText: 'Prefecture',
+      items: prefectureList,
+      selectedValue: selectedPrefecture,
+      onSelected: onSelected,
+    );
+  }
+}
+
+class WardDropdown extends StatelessWidget {
+  final TextEditingController controller;
+  final String? selectedPrefecture;
+  final String? selectedWard;
+  final ValueChanged<String?> onSelected;
+  final List<String> Function(String) getWardList;
+
+  const WardDropdown({
+    super.key,
+    required this.controller,
+    required this.selectedPrefecture,
+    required this.selectedWard,
+    required this.onSelected,
+    required this.getWardList,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDropdownMenu<String>(
+      controller: controller,
+      labelText: 'Ward',
+      items: selectedPrefecture != null ? getWardList(selectedPrefecture!) : [],
+      selectedValue: selectedWard,
+      onSelected: onSelected,
+      menuHeight: 200.0,
+      enabled: selectedPrefecture != null,
+    );
+  }
+}
+
+class ProficiencyDropdown extends StatelessWidget {
+  final TextEditingController controller;
+  final String? selectedProficiency;
+  final ValueChanged<String?> onSelected;
+
+  const ProficiencyDropdown({
+    super.key,
+    required this.controller,
+    required this.selectedProficiency,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDropdownMenu<String>(
+      controller: controller,
+      labelText: 'Japanese Proficiency',
+      items: proficiencyList,
+      selectedValue: selectedProficiency,
+      onSelected: onSelected,
+    );
+  }
+}
+
+class FinishButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const FinishButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return FilledButton.icon(
+      onPressed: onPressed,
+      icon: const Icon(Icons.done, color: Colors.white),
+      label: Text('Finish', style: TextStyle(color: theme.colorScheme.onPrimary)),
     );
   }
 }
@@ -186,4 +344,3 @@ const List<String> prefectureList = [
 const List<String> proficiencyList = [
   'Beginner', 'Intermediate', 'Advanced', 'Native'
 ];
-
