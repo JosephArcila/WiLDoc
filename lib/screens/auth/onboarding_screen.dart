@@ -32,14 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   List<String> getWardList(String prefecture) {
-    // Add logic here to return the list of wards based on the selected prefecture
-    if (prefecture == 'Tokyo') {
-      return ['Chiyoda', 'Chuo', 'Minato', 'Shinjuku'];
-    } else if (prefecture == 'Osaka') {
-      return ['Kita', 'Chuo', 'Nishi', 'Yodogawa'];
-    }
-    // Add other prefectures and their wards as needed
-    return [];
+    return wardsMap[prefecture] ?? [];
   }
 
   Future<void> _selectVisaExpiration(BuildContext context) async {
@@ -67,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         title: Text('Tell us about yourself', style: theme.textTheme.titleLarge),
         centerTitle: false,
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Make the content scrollable
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -131,7 +124,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 });
               },
             ),
-            const Spacer(),
+            const SizedBox(height: 16.0),
             FinishButton(onPressed: _completeProfile),
             const SizedBox(height: 16.0),
           ],
