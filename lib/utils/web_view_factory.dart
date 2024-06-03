@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 import 'dart:ui_web' as ui_web;
 
@@ -18,8 +19,16 @@ void registerWebViewFactory() {
         ..setAttribute('playsinline', 'true')
         ..style.transform = 'scaleX(-1)'; // Apply the horizontal flip
 
+      final constraints = {
+        'video': {
+          'facingMode': kIsWeb && html.window.navigator.userAgent.contains('Macintosh')
+              ? 'user' // Front camera for Mac
+              : 'environment' // Back camera for other devices
+        }
+      };
+
       html.window.navigator.mediaDevices
-          ?.getUserMedia({'video': true})
+          ?.getUserMedia(constraints)
           .then((stream) {
         videoElement!.srcObject = stream;
       }).catchError((e) {
