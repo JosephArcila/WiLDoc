@@ -43,6 +43,7 @@ dependencies:
   cloud_firestore: ^4.17.4
   firebase_storage: ^11.7.6
   universal_html: ^2.2.4
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

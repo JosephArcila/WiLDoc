@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:wil_doc/providers/user_provider.dart';
 import 'package:wil_doc/utils/theme.dart';
 import 'package:wil_doc/utils/web_view_factory.dart';
-import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
+import 'package:wil_doc/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: "AIzaSyBDo5W2woIYsKuycY5mkpVDDmen5R8TYlI",
@@ -15,13 +18,24 @@ void main() async {
       messagingSenderId: "355560021631",
       appId: "1:355560021631:web:212af7d0257ef096b3294a",
       measurementId: "G-0PPQWPM7DD",
+      // If necessary, specify a database URL
+      // databaseURL: "https://wildocjapan.firebaseio.com",
     ),
   );
+  
+  print("Firebase initialized");
 
   // Register the camera plugin view
   registerWebViewFactory();
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -32,8 +46,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'WiLDoc',
       theme: lightHighContrastTheme,
-      initialRoute: AppRoutes.scanDocument, // Set the initial route to scan document screen
-      onGenerateRoute: AppRoutes.generateRoute, // Set the route generator
+      initialRoute: AppRoutes.scanDocument,
+      onGenerateRoute: AppRoutes.generateRoute,
     );
   }
 }

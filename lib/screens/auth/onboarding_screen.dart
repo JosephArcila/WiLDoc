@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:wil_doc/models/user.dart' as model;
+import 'package:wil_doc/providers/user_provider.dart';
 import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/widgets/custom_text_field.dart';
 import 'package:wil_doc/widgets/custom_dropdown_menu.dart';
-import 'package:wil_doc/utils/constants.dart'; // Add this import
+import 'package:wil_doc/utils/constants.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -26,10 +30,61 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String? selectedWard;
   String? selectedProficiency;
 
-  Future<void> _completeProfile() async {
-    // Logic to save user profile information goes here
-    Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+ Future<void> _completeProfile() async {
+  print("Complete profile method called");
+
+  // Check if the current user is signed in
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) {
+    print("No user is signed in.");
+    return;
   }
+
+  // Ensure required fields are not null
+  if (selectedNationality == null ||
+      selectedVisaStatus == null ||
+      selectedPrefecture == null ||
+      selectedWard == null ||
+      selectedProficiency == null) {
+    print("One or more required fields are not selected.");
+    return;
+  }
+
+  print("Creating user model");
+  final user = model.User(
+    userId: currentUser.uid,
+    email: currentUser.email!,
+    password: '',
+    fullName: _fullNameController.text,
+    nationality: selectedNationality!,
+    visaStatus: selectedVisaStatus!,
+    durationOfStay: _visaExpirationController.text,
+    prefecture: selectedPrefecture!,
+    ward: selectedWard!,
+    japaneseProficiency: selectedProficiency!,
+    preferredLanguage: 'en',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
+
+  try {
+    print("Attempting to get UserProvider");
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    print("Calling saveUser in UserProvider with user: ${user.toMap()}");
+    await userProvider.saveUser(user);
+
+    print("User saved successfully");
+
+    // Navigate to the next screen if the widget is still mounted
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+    }
+  } catch (e) {
+    print("Error saving user: $e");
+  }
+}
+
 
   List<String> getWardList(String prefecture) {
     return wardsMap[prefecture] ?? [];
@@ -60,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         title: Text('Tell us about yourself', style: theme.textTheme.titleLarge),
         centerTitle: false,
       ),
-      body: SingleChildScrollView( // Make the content scrollable
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,7 +153,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               onSelected: (String? prefecture) {
                 setState(() {
                   selectedPrefecture = prefecture;
-                  selectedWard = null; // Reset ward when prefecture changes
+                  selectedWard = null;
                 });
               },
             ),
