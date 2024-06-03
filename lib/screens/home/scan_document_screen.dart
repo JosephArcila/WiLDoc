@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/routes/app_routes.dart';
@@ -19,16 +20,66 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   }
 
   void _checkProfileCompletion() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      // Here you would check if the user's profile is complete
-      // For this example, we assume the profile is incomplete
-      bool isProfileComplete = false; // This should be fetched from your backend
-      if (!isProfileComplete) {
-        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    try {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (mounted) {
+        if (userDoc.exists) {
+          final data = userDoc.data();
+          
+          // Log data for debugging
+          developer.log('User document data: $data');
+          
+          // Explicitly check each field and log which ones are missing
+          bool isProfileComplete = true;
+          List<String> missingFields = [];
+
+          if (data?['full_name'] == null) {
+            isProfileComplete = false;
+            missingFields.add('full_name');
+          }
+          if (data?['nationality'] == null) {
+            isProfileComplete = false;
+            missingFields.add('nationality');
+          }
+          if (data?['visa_status'] == null) {
+            isProfileComplete = false;
+            missingFields.add('visa_status');
+          }
+          if (data?['duration_of_stay'] == null) {
+            isProfileComplete = false;
+            missingFields.add('duration_of_stay');
+          }
+          if (data?['prefecture'] == null) {
+            isProfileComplete = false;
+            missingFields.add('prefecture');
+          }
+          if (data?['ward'] == null) {
+            isProfileComplete = false;
+            missingFields.add('ward');
+          }
+          if (data?['japanese_proficiency'] == null) {
+            isProfileComplete = false;
+            missingFields.add('japanese_proficiency');
+          }
+
+          developer.log('Missing fields: ${missingFields.join(', ')}');
+          developer.log('Is profile complete: $isProfileComplete');
+
+          if (!isProfileComplete) {
+            Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+          }
+        } else {
+          // If no user document exists, redirect to onboarding
+          Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+        }
       }
+    } catch (e) {
+      developer.log('Error checking profile completion: $e');
     }
   }
+}
 
   void _takePicture() async {
     try {

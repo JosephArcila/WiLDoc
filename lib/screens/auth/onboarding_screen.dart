@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wil_doc/models/user.dart' as model;
 import 'package:wil_doc/providers/user_provider.dart';
@@ -30,61 +31,76 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String? selectedWard;
   String? selectedProficiency;
 
- Future<void> _completeProfile() async {
-  print("Complete profile method called");
-
-  // Check if the current user is signed in
-  final currentUser = FirebaseAuth.instance.currentUser;
-  if (currentUser == null) {
-    print("No user is signed in.");
-    return;
-  }
-
-  // Ensure required fields are not null
-  if (selectedNationality == null ||
-      selectedVisaStatus == null ||
-      selectedPrefecture == null ||
-      selectedWard == null ||
-      selectedProficiency == null) {
-    print("One or more required fields are not selected.");
-    return;
-  }
-
-  print("Creating user model");
-  final user = model.User(
-    userId: currentUser.uid,
-    email: currentUser.email!,
-    password: '',
-    fullName: _fullNameController.text,
-    nationality: selectedNationality!,
-    visaStatus: selectedVisaStatus!,
-    durationOfStay: _visaExpirationController.text,
-    prefecture: selectedPrefecture!,
-    ward: selectedWard!,
-    japaneseProficiency: selectedProficiency!,
-    preferredLanguage: 'en',
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
-  );
-
-  try {
-    print("Attempting to get UserProvider");
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-    print("Calling saveUser in UserProvider with user: ${user.toMap()}");
-    await userProvider.saveUser(user);
-
-    print("User saved successfully");
-
-    // Navigate to the next screen if the widget is still mounted
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+  Future<void> _completeProfile() async {
+    if (kDebugMode) {
+      print("Complete profile method called");
     }
-  } catch (e) {
-    print("Error saving user: $e");
-  }
-}
 
+    // Check if the current user is signed in
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      if (kDebugMode) {
+        print("No user is signed in.");
+      }
+      return;
+    }
+
+    // Ensure required fields are not null
+    if (selectedNationality == null ||
+        selectedVisaStatus == null ||
+        selectedPrefecture == null ||
+        selectedWard == null ||
+        selectedProficiency == null) {
+      if (kDebugMode) {
+        print("One or more required fields are not selected.");
+      }
+      return;
+    }
+
+    if (kDebugMode) {
+      print("Creating user model");
+    }
+    final user = model.User(
+      userId: currentUser.uid,
+      email: currentUser.email!,
+      password: '',
+      fullName: _fullNameController.text,
+      nationality: selectedNationality!,
+      visaStatus: selectedVisaStatus!,
+      durationOfStay: _visaExpirationController.text,
+      prefecture: selectedPrefecture!,
+      ward: selectedWard!,
+      japaneseProficiency: selectedProficiency!,
+      preferredLanguage: 'en',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    try {
+      if (kDebugMode) {
+        print("Attempting to get UserProvider");
+      }
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+      if (kDebugMode) {
+        print("Calling saveUser in UserProvider with user: ${user.toMap()}");
+      }
+      await userProvider.saveUser(user);
+
+      if (kDebugMode) {
+        print("User saved successfully");
+      }
+
+      // Navigate to the next screen if the widget is still mounted
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving user: $e");
+      }
+    }
+  }
 
   List<String> getWardList(String prefecture) {
     return wardsMap[prefecture] ?? [];

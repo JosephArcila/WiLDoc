@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/user.dart';
 
 class FirestoreService {
@@ -6,13 +7,21 @@ class FirestoreService {
 
   Future<void> saveUser(User user) async {
     try {
-      print("Attempting to save user: ${user.userId} with data: ${user.toMap()}");
+      if (kDebugMode) {
+        print("Attempting to save user: ${user.userId} with data: ${user.toMap()}");
+      }
       await _firestore.collection('users').doc(user.userId).set(user.toMap());
-      print("User saved successfully: ${user.userId}");
+      if (kDebugMode) {
+        print("User saved successfully: ${user.userId}");
+      }
     } catch (e) {
-      print("Error saving user: $e");
+      if (kDebugMode) {
+        print("Error saving user: $e");
+      }
       if (e is FirebaseException) {
-        print("FirebaseException: ${e.message}");
+        if (kDebugMode) {
+          print("FirebaseException: ${e.message}");
+        }
       }
       rethrow;
     }
@@ -20,38 +29,58 @@ class FirestoreService {
 
   Future<User?> getUser(String userId) async {
     try {
-      print("Attempting to get user: $userId");
+      if (kDebugMode) {
+        print("Attempting to get user: $userId");
+      }
       DocumentSnapshot doc = await _firestore.collection('users').doc(userId).get();
       if (doc.exists) {
-        print("User found: ${doc.id}");
+        if (kDebugMode) {
+          print("User found: ${doc.id}");
+        }
         return User.fromMap(doc.data() as Map<String, dynamic>);
       }
-      print("User not found: $userId");
+      if (kDebugMode) {
+        print("User not found: $userId");
+      }
       return null;
     } catch (e) {
-      print("Error getting user: $e");
+      if (kDebugMode) {
+        print("Error getting user: $e");
+      }
       return null;
     }
   }
 
   Future<void> updateUser(User user) async {
     try {
-      print("Attempting to update user: ${user.userId} with data: ${user.toMap()}");
+      if (kDebugMode) {
+        print("Attempting to update user: ${user.userId} with data: ${user.toMap()}");
+      }
       await _firestore.collection('users').doc(user.userId).update(user.toMap());
-      print("User updated successfully: ${user.userId}");
+      if (kDebugMode) {
+        print("User updated successfully: ${user.userId}");
+      }
     } catch (e) {
-      print("Error updating user: $e");
+      if (kDebugMode) {
+        print("Error updating user: $e");
+      }
       rethrow;
     }
   }
 
   Future<void> deleteUser(String userId) async {
     try {
-      print("Attempting to delete user: $userId");
+      if (kDebugMode) {
+        print("Attempting to delete user: $userId");
+      }
       await _firestore.collection('users').doc(userId).delete();
-      print("User deleted successfully: $userId");
+      if (kDebugMode) {
+        print("User deleted successfully: $userId");
+      }
     } catch (e) {
-      print("Error deleting user: $e");
+      if (kDebugMode) {
+        print("Error deleting user: $e");
+      }
       rethrow;
     }
   }
