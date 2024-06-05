@@ -20,9 +20,12 @@ void registerWebViewFactory() {
 
       final constraints = {
         'video': {
-          'facingMode': kIsWeb && html.window.navigator.userAgent.contains('Macintosh')
-              ? 'user' // Front camera for Mac
-              : 'environment' // Back camera for other devices
+          'facingMode':
+              kIsWeb && html.window.navigator.userAgent.contains('Macintosh')
+                  ? 'user' // Front camera for Mac used just for testing
+                  : 'environment', // Back camera for other devices
+          'width': {'ideal': 1920},
+          'height': {'ideal': 1080},
         }
       };
 
@@ -40,14 +43,14 @@ void registerWebViewFactory() {
 }
 
 Future<String> captureFrame() async {
-  final html.CanvasElement canvas =
-      html.CanvasElement(width: videoElement?.videoWidth ?? 0, height: videoElement?.videoHeight ?? 0);
+  final width = videoElement?.videoWidth ?? 0;
+  final height = videoElement?.videoHeight ?? 0;
+  
+  // Creating a canvas element with the same resolution as the video
+  final html.CanvasElement canvas = html.CanvasElement(width: width, height: height);
   final html.CanvasRenderingContext2D ctx = canvas.getContext('2d') as html.CanvasRenderingContext2D;
   
-  // Remove horizontal flip
-  // ctx.translate(canvas.width!, 0);
-  // ctx.scale(-1, 1);
-  
   ctx.drawImage(videoElement!, 0, 0);
+  ctx.filter = 'contrast(1.5) brightness(1.2)';
   return canvas.toDataUrl('image/png');
 }
