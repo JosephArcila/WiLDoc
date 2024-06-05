@@ -68,11 +68,11 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
           developer.log('Is profile complete: $isProfileComplete');
 
           if (!isProfileComplete) {
-            Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+            Navigator.pushReplacementNamed(context, AppRoutes.profilesetup);
           }
         } else {
-          // If no user document exists, redirect to onboarding
-          Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+          // If no user document exists, redirect to profilesetup
+          Navigator.pushReplacementNamed(context, AppRoutes.profilesetup);
         }
       }
     } catch (e) {

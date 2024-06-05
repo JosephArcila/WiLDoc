@@ -3,7 +3,7 @@ import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/screens/auth/register_screen.dart';
 import 'package:wil_doc/screens/auth/account_screen.dart';
 import 'package:wil_doc/screens/auth/reset_password_screen.dart';
-import 'package:wil_doc/screens/auth/onboarding_screen.dart';
+import 'package:wil_doc/screens/auth/profilesetup_screen.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
 import 'package:wil_doc/screens/document/document_preview_screen.dart';
 import 'package:wil_doc/screens/document/document_summary_screen.dart';
@@ -17,7 +17,7 @@ class AppRoutes {
   static const String register = '/register';
   static const String account = '/account';
   static const String resetPassword = '/reset-password';
-  static const String onboarding = '/onboarding';
+  static const String profilesetup = '/profilesetup';
   static const String scanDocument = '/scan-document';
   static const String documentPreview = '/document-preview';
   static const String documentSummary = '/document-summary';
@@ -36,8 +36,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const AccountScreen());
       case resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
-      case onboarding:
-        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
+      case profilesetup:
+        return MaterialPageRoute(builder: (_) => const ProfileSetupScreen());
       case scanDocument:
         return MaterialPageRoute(builder: (_) => const ScanDocumentScreen());
       case documentPreview:

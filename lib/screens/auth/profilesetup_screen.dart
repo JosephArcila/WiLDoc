@@ -9,14 +9,14 @@ import 'package:wil_doc/utils/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+class ProfileSetupScreen extends StatefulWidget {
+  const ProfileSetupScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _nationalityController = TextEditingController();
   final TextEditingController _visaStatusController = TextEditingController();
@@ -139,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tell us about yourself', style: theme.textTheme.titleLarge),
+        title: Text('Set Up Your Profile', style: theme.textTheme.titleLarge),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
