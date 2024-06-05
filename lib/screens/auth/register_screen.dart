@@ -35,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _passwordController.text,
         );
         if (user != null && mounted) {
-          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
         }
       } on FirebaseAuthException catch (e) {
         if (!mounted) return;
