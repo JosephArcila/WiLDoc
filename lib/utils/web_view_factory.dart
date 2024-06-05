@@ -16,8 +16,7 @@ void registerWebViewFactory() {
         ..style.height = '100%'
         ..style.objectFit = 'cover' // Ensure the video covers the container
         ..autoplay = true
-        ..setAttribute('playsinline', 'true')
-        ..style.transform = 'scaleX(-1)'; // Apply the horizontal flip
+        ..setAttribute('playsinline', 'true');
 
       final constraints = {
         'video': {
@@ -42,11 +41,13 @@ void registerWebViewFactory() {
 
 Future<String> captureFrame() async {
   final html.CanvasElement canvas =
-      html.CanvasElement(width: videoElement!.videoWidth, height: videoElement!.videoHeight);
+      html.CanvasElement(width: videoElement?.videoWidth ?? 0, height: videoElement?.videoHeight ?? 0);
   final html.CanvasRenderingContext2D ctx = canvas.getContext('2d') as html.CanvasRenderingContext2D;
-  // Draw the flipped video feed onto the canvas
-  ctx.translate(canvas.width!, 0);
-  ctx.scale(-1, 1);
+  
+  // Remove horizontal flip
+  // ctx.translate(canvas.width!, 0);
+  // ctx.scale(-1, 1);
+  
   ctx.drawImage(videoElement!, 0, 0);
   return canvas.toDataUrl('image/png');
 }
