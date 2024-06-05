@@ -19,8 +19,6 @@ void main() async {
       messagingSenderId: "355560021631",
       appId: "1:355560021631:web:212af7d0257ef096b3294a",
       measurementId: "G-0PPQWPM7DD",
-      // If necessary, specify a database URL
-      // databaseURL: "https://wildocjapan.firebaseio.com",
     ),
   );
   

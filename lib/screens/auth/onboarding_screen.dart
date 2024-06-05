@@ -32,49 +32,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String? selectedProficiency;
 
   Future<void> _completeProfile() async {
+  if (kDebugMode) {
+    print("Complete profile method called");
+  }
+
+  // Check if the current user is signed in
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) {
     if (kDebugMode) {
-      print("Complete profile method called");
+      print("No user is signed in.");
     }
+    return;
+  }
 
-    // Check if the current user is signed in
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      if (kDebugMode) {
-        print("No user is signed in.");
-      }
-      return;
-    }
-
-    // Ensure required fields are not null
-    if (selectedNationality == null ||
-        selectedVisaStatus == null ||
-        selectedPrefecture == null ||
-        selectedWard == null ||
-        selectedProficiency == null) {
-      if (kDebugMode) {
-        print("One or more required fields are not selected.");
-      }
-      return;
-    }
-
+  // Ensure required fields are not null
+  if (selectedNationality == null ||
+      selectedVisaStatus == null ||
+      selectedPrefecture == null ||
+      selectedProficiency == null) {
     if (kDebugMode) {
-      print("Creating user model");
+      print("One or more required fields are not selected.");
     }
-    final user = model.User(
-      userId: currentUser.uid,
-      email: currentUser.email!,
-      password: '',
-      fullName: _fullNameController.text,
-      nationality: selectedNationality!,
-      visaStatus: selectedVisaStatus!,
-      durationOfStay: _visaExpirationController.text,
-      prefecture: selectedPrefecture!,
-      ward: selectedWard!,
-      japaneseProficiency: selectedProficiency!,
-      preferredLanguage: 'en',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
+    return;
+  }
+
+  // Check if the selected prefecture has wards
+  final wardList = getWardList(selectedPrefecture!);
+  final hasWards = wardList.isNotEmpty;
+
+  // If the prefecture has wards, ensure the ward field is not null
+  if (hasWards && selectedWard == null) {
+    if (kDebugMode) {
+      print("Ward is required for the selected prefecture.");
+    }
+    return;
+  }
+
+  if (kDebugMode) {
+    print("Creating user model");
+  }
+  final user = model.User(
+    userId: currentUser.uid,
+    email: currentUser.email!,
+    password: '',
+    fullName: _fullNameController.text,
+    nationality: selectedNationality!,
+    visaStatus: selectedVisaStatus!,
+    durationOfStay: _visaExpirationController.text,
+    prefecture: selectedPrefecture!,
+    ward: hasWards ? selectedWard! : '',
+    japaneseProficiency: selectedProficiency!,
+    preferredLanguage: 'en',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
 
     try {
       if (kDebugMode) {
