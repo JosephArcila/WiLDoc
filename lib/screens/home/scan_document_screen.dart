@@ -13,6 +13,8 @@ class ScanDocumentScreen extends StatefulWidget {
 }
 
 class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
+  List<String> scannedPages = [];
+
   @override
   void initState() {
     super.initState();
@@ -20,76 +22,79 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   }
 
   void _checkProfileCompletion() async {
-  final User? user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-      if (mounted) {
-        if (userDoc.exists) {
-          final data = userDoc.data();
-          
-          // Log data for debugging
-          developer.log('User document data: $data');
-          
-          // Explicitly check each field and log which ones are missing
-          bool isProfileComplete = true;
-          List<String> missingFields = [];
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        if (mounted) {
+          if (userDoc.exists) {
+            final data = userDoc.data();
 
-          if (data?['full_name'] == null) {
-            isProfileComplete = false;
-            missingFields.add('full_name');
-          }
-          if (data?['nationality'] == null) {
-            isProfileComplete = false;
-            missingFields.add('nationality');
-          }
-          if (data?['visa_status'] == null) {
-            isProfileComplete = false;
-            missingFields.add('visa_status');
-          }
-          if (data?['duration_of_stay'] == null) {
-            isProfileComplete = false;
-            missingFields.add('duration_of_stay');
-          }
-          if (data?['prefecture'] == null) {
-            isProfileComplete = false;
-            missingFields.add('prefecture');
-          }
-          if (data?['ward'] == null) {
-            isProfileComplete = false;
-            missingFields.add('ward');
-          }
-          if (data?['japanese_proficiency'] == null) {
-            isProfileComplete = false;
-            missingFields.add('japanese_proficiency');
-          }
+            bool isProfileComplete = true;
+            List<String> missingFields = [];
 
-          developer.log('Missing fields: ${missingFields.join(', ')}');
-          developer.log('Is profile complete: $isProfileComplete');
+            if (data?['full_name'] == null) {
+              isProfileComplete = false;
+              missingFields.add('full_name');
+            }
+            if (data?['nationality'] == null) {
+              isProfileComplete = false;
+              missingFields.add('nationality');
+            }
+            if (data?['visa_status'] == null) {
+              isProfileComplete = false;
+              missingFields.add('visa_status');
+            }
+            if (data?['duration_of_stay'] == null) {
+              isProfileComplete = false;
+              missingFields.add('duration_of_stay');
+            }
+            if (data?['prefecture'] == null) {
+              isProfileComplete = false;
+              missingFields.add('prefecture');
+            }
+            if (data?['ward'] == null) {
+              isProfileComplete = false;
+              missingFields.add('ward');
+            }
+            if (data?['japanese_proficiency'] == null) {
+              isProfileComplete = false;
+              missingFields.add('japanese_proficiency');
+            }
 
-          if (!isProfileComplete) {
+            developer.log('Missing fields: ${missingFields.join(', ')}');
+            developer.log('Is profile complete: $isProfileComplete');
+
+            if (!isProfileComplete) {
+              Navigator.pushReplacementNamed(context, AppRoutes.profilesetup);
+            }
+          } else {
             Navigator.pushReplacementNamed(context, AppRoutes.profilesetup);
           }
-        } else {
-          // If no user document exists, redirect to profilesetup
-          Navigator.pushReplacementNamed(context, AppRoutes.profilesetup);
         }
+      } catch (e) {
+        developer.log('Error checking profile completion: $e');
       }
-    } catch (e) {
-      developer.log('Error checking profile completion: $e');
     }
   }
-}
 
   void _takePicture() async {
     try {
       final imageDataUrl = await captureFrame();
       if (!mounted) return;
-      Navigator.pushNamed(
+      setState(() {
+        scannedPages.add(imageDataUrl);
+      });
+      final result = await Navigator.pushNamed(
         context,
         AppRoutes.documentPreview,
-        arguments: {'imagePath': imageDataUrl},
+        arguments: {'imagePaths': scannedPages},
       );
+      if (result == 'scan_more') {
+        // Continue scanning additional pages
+      } else if (result == 'confirm') {
+        // Handle confirmation of all pages scanned
+      }
     } catch (e) {
       developer.log('Error taking picture: $e');
     }
@@ -108,7 +113,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Remove the back button
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('WiLDoc'),
         actions: [
