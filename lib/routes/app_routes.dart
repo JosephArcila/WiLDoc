@@ -7,8 +7,8 @@ import 'package:wil_doc/screens/auth/profilesetup_screen.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
 import 'package:wil_doc/screens/document/document_preview_screen.dart';
 import 'package:wil_doc/screens/document/document_summary_screen.dart';
-import 'package:wil_doc/screens/document/document_translation_screen.dart';
-import 'package:wil_doc/screens/document/document_guide_screen.dart';
+// import 'package:wil_doc/screens/document/document_translation_screen.dart';
+// import 'package:wil_doc/screens/document/document_guide_screen.dart';
 import 'package:wil_doc/screens/document/documents_screen.dart';
 import 'package:wil_doc/screens/feedback/feedback_screen.dart';
 
@@ -47,10 +47,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePaths: args['imagePaths']));
       case documentSummary:
         return MaterialPageRoute(builder: (_) => const DocumentSummaryScreen());
-      case documentTranslation:
-        return MaterialPageRoute(builder: (_) => const DocumentTranslationScreen());
-      case documentGuide:
-        return MaterialPageRoute(builder: (_) => const DocumentGuideScreen());
+      // case documentTranslation:
+      //   return MaterialPageRoute(builder: (_) => const DocumentTranslationScreen());
+      // case documentGuide:
+      //   return MaterialPageRoute(builder: (_) => const DocumentGuideScreen());
       case documents:
         return MaterialPageRoute(builder: (_) => const DocumentsScreen());
       case feedback:

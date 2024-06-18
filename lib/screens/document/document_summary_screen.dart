@@ -41,7 +41,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
             ),
             Tab(
               text: 'Guide',
-              icon: Icon(_tabController.index == 2 ? Icons.support_rounded : Icons.support_outlined),
+              icon: Icon(_tabController.index == 2 ? Icons.support : Icons.support_outlined),
             ),
           ],
           onTap: (index) {

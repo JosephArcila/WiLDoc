@@ -71,12 +71,32 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                     ),
                   );
                 }
-                return ListTile(
-                  leading: Image.network(_imagePaths[index]),
-                  title: Text('Page ${index + 1}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () => _deletePage(index),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(_imagePaths[index]),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          'Page ${index + 1}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () => _deletePage(index),
+                      ),
+                    ],
                   ),
                 );
               },
