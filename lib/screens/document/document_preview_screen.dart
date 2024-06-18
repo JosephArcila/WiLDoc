@@ -39,6 +39,7 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Document Preview'),
       ),
       body: Column(

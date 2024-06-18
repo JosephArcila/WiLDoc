@@ -41,6 +41,7 @@ class AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: const Text('Account'),
       ),
       body: Padding(

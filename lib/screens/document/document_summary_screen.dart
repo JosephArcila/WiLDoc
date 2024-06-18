@@ -9,6 +9,7 @@ class DocumentSummaryScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: false,
           title: const Text('Document Scan'),
           bottom: const TabBar(
             tabs: [
