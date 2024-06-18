@@ -13,9 +13,9 @@ class DocumentGuideScreen extends StatelessWidget {
           title: const Text('Document Scan'),
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Summary', icon: Icon(Icons.description)),
-              Tab(text: 'Translation', icon: Icon(Icons.translate)),
-              Tab(text: 'Guide', icon: Icon(Icons.help_outline)),
+              Tab(text: 'Summary', icon: Icon(Icons.summarize_outlined)),
+              Tab(text: 'Translation', icon: Icon(Icons.translate_outlined)),
+              Tab(text: 'Guide', icon: Icon(Icons.support_outlined)),
             ],
           ),
         ),
