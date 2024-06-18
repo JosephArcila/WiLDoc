@@ -92,8 +92,11 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
       );
       if (result == 'scan_more') {
         // Continue scanning additional pages
-      } else if (result == 'confirm') {
-        // Handle confirmation of all pages scanned
+      } else if (result is List<String>) {
+        // Update the scanned pages list after returning from preview
+        setState(() {
+          scannedPages = result;
+        });
       }
     } catch (e) {
       developer.log('Error taking picture: $e');
@@ -137,4 +140,3 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
     );
   }
 }
-

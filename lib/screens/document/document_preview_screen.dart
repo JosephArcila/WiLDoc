@@ -55,7 +55,7 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                       children: [
                         FilledButton.tonal(
                           onPressed: () {
-                            Navigator.pop(context, 'scan_more');
+                            Navigator.pop(context, _imagePaths);
                           },
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
