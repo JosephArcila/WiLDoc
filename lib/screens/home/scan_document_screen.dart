@@ -137,3 +137,4 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
     );
   }
 }
+

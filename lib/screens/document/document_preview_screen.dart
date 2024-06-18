@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wil_doc/routes/app_routes.dart';
 
 class DocumentPreviewScreen extends StatefulWidget {
   final List<String> imagePaths;
@@ -22,6 +24,15 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     setState(() {
       _imagePaths.removeAt(index);
     });
+  }
+
+  Future<void> _handleConfirm() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      Navigator.pushReplacementNamed(context, AppRoutes.documentSummary);
+    } else {
+      Navigator.pushNamed(context, AppRoutes.login, arguments: {'redirectTo': AppRoutes.documentSummary});
+    }
   }
 
   @override
@@ -73,9 +84,7 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: FilledButton(
-              onPressed: () {
-                Navigator.pop(context, 'confirm');
-              },
+              onPressed: _handleConfirm,
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

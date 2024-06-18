@@ -29,7 +29,9 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case login:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        final args = settings.arguments as Map<String, dynamic>?;
+        final redirectTo = args?['redirectTo'] as String?;
+        return MaterialPageRoute(builder: (_) => LoginScreen(redirectTo: redirectTo));
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case account:

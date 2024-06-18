@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
+import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? redirectTo;
+
+  const LoginScreen({super.key, this.redirectTo});
 
   @override
   LoginScreenState createState() => LoginScreenState();
@@ -30,7 +32,7 @@ class LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.scanDocument); // Use named route
+        Navigator.pushReplacementNamed(context, widget.redirectTo ?? AppRoutes.scanDocument);
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -80,7 +82,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.register); // Use named route
+                    Navigator.pushReplacementNamed(context, AppRoutes.register);
                   },
                   child: Text(
                     'Register',
@@ -108,7 +110,7 @@ class LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.resetPassword); // Use named route
+                  Navigator.pushNamed(context, AppRoutes.resetPassword);
                 },
                 child: Text(
                   'Forgotten password?',
