@@ -49,6 +49,16 @@
       firestore: firestore
     };
   </script>
+
+  <!-- Tesseract.js -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+<script>
+  async function extractTextFromImage(imageUrl) {
+    const { Tesseract } = window;
+    const result = await Tesseract.recognize(imageUrl, 'eng');
+    return result.data.text;
+  }
+</script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

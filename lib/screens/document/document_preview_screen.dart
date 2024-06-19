@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:js' as js;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/routes/app_routes.dart';
@@ -13,11 +15,13 @@ class DocumentPreviewScreen extends StatefulWidget {
 
 class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
   late List<String> _imagePaths;
+  String extractedText = "Extracting text...";
 
   @override
   void initState() {
     super.initState();
     _imagePaths = List.from(widget.imagePaths);
+    _extractTextFromFirstImage();
   }
 
   void _deletePage(int index) {
@@ -35,6 +39,25 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     }
   }
 
+  Future<void> _extractTextFromFirstImage() async {
+    if (_imagePaths.isNotEmpty) {
+      final promise = js.context.callMethod('extractTextFromImage', [_imagePaths[0]]);
+      final text = await promiseToFuture(promise);
+      setState(() {
+        extractedText = text;
+      });
+    }
+  }
+
+  Future<String> promiseToFuture(js.JsObject promise) {
+    final completer = Completer<String>();
+    promise.callMethod('then', [
+      (result) => completer.complete(result),
+      (error) => completer.completeError(error)
+    ]);
+    return completer.future;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +69,7 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _imagePaths.length + 1, // Add one for the button
+              itemCount: _imagePaths.length + 1,
               itemBuilder: (context, index) {
                 if (index == _imagePaths.length) {
                   return Padding(
@@ -101,6 +124,10 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                 );
               },
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(extractedText),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
