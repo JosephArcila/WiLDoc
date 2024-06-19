@@ -1,4 +1,5 @@
-// /Users/joseph/projects/wil_doc/lib/screens/document/document_preview_screen.dart
+// /lib/screens/document/document_preview_screen.dart
+// ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:async';
 import 'dart:js' as js;
 import 'package:flutter/material.dart';
