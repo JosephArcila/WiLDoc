@@ -1,7 +1,10 @@
+// /Users/joseph/projects/wil_doc/lib/screens/document/document_summary_screen.dart
 import 'package:flutter/material.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
-  const DocumentSummaryScreen({super.key});
+  final String extractedText;
+
+  const DocumentSummaryScreen({super.key, required this.extractedText});
 
   @override
   DocumentSummaryScreenState createState() => DocumentSummaryScreenState();
@@ -49,13 +52,18 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           },
         ),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-          ],
-        ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(widget.extractedText),
+            ),
+          ),
+          const Center(child: Text('Translation screen')),
+          const Center(child: Text('Guide screen')),
+        ],
       ),
     );
   }

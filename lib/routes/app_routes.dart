@@ -1,3 +1,4 @@
+// /Users/joseph/projects/wil_doc/lib/routes/app_routes.dart
 import 'package:flutter/material.dart';
 import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/screens/auth/register_screen.dart';
@@ -7,8 +8,6 @@ import 'package:wil_doc/screens/auth/profilesetup_screen.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
 import 'package:wil_doc/screens/document/document_preview_screen.dart';
 import 'package:wil_doc/screens/document/document_summary_screen.dart';
-// import 'package:wil_doc/screens/document/document_translation_screen.dart';
-// import 'package:wil_doc/screens/document/document_guide_screen.dart';
 import 'package:wil_doc/screens/document/documents_screen.dart';
 import 'package:wil_doc/screens/feedback/feedback_screen.dart';
 
@@ -46,11 +45,8 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePaths: args['imagePaths']));
       case documentSummary:
-        return MaterialPageRoute(builder: (_) => const DocumentSummaryScreen());
-      // case documentTranslation:
-      //   return MaterialPageRoute(builder: (_) => const DocumentTranslationScreen());
-      // case documentGuide:
-      //   return MaterialPageRoute(builder: (_) => const DocumentGuideScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (_) => DocumentSummaryScreen(extractedText: args['extractedText']));
       case documents:
         return MaterialPageRoute(builder: (_) => const DocumentsScreen());
       case feedback:

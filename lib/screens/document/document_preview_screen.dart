@@ -1,3 +1,4 @@
+// /Users/joseph/projects/wil_doc/lib/screens/document/document_preview_screen.dart
 import 'dart:async';
 import 'dart:js' as js;
 import 'package:flutter/material.dart';
@@ -33,19 +34,37 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
   Future<void> _handleConfirm() async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      Navigator.pushReplacementNamed(context, AppRoutes.documentSummary);
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.documentSummary,
+        arguments: {'extractedText': extractedText},
+      );
     } else {
-      Navigator.pushNamed(context, AppRoutes.login, arguments: {'redirectTo': AppRoutes.documentSummary});
+      Navigator.pushNamed(
+        context,
+        AppRoutes.login,
+        arguments: {'redirectTo': AppRoutes.documentSummary, 'extractedText': extractedText},
+      );
     }
   }
 
   Future<void> _extractTextFromFirstImage() async {
-    if (_imagePaths.isNotEmpty) {
-      final promise = js.context.callMethod('extractTextFromImage', [_imagePaths[0]]);
-      final text = await promiseToFuture(promise);
-      setState(() {
-        extractedText = text;
-      });
+    try {
+      if (_imagePaths.isNotEmpty) {
+        final promise = js.context.callMethod('extractTextFromImage', [_imagePaths[0]]);
+        final text = await promiseToFuture(promise);
+        if (mounted) {
+          setState(() {
+            extractedText = text;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          extractedText = 'Failed to extract text: $e';
+        });
+      }
     }
   }
 
@@ -124,10 +143,6 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                 );
               },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(extractedText),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
