@@ -1,4 +1,3 @@
-// /Users/joseph/projects/wil_doc/lib/routes/app_routes.dart
 import 'package:flutter/material.dart';
 import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/screens/auth/register_screen.dart';
@@ -28,8 +27,8 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case login:
-        final args = settings.arguments as Map<String, dynamic>?;
-        final redirectTo = args?['redirectTo'] as String?;
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final redirectTo = args['redirectTo'] as String?;
         return MaterialPageRoute(builder: (_) => LoginScreen(redirectTo: redirectTo));
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
@@ -42,11 +41,11 @@ class AppRoutes {
       case scanDocument:
         return MaterialPageRoute(builder: (_) => const ScanDocumentScreen());
       case documentPreview:
-        final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePaths: args['imagePaths']));
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePaths: args['imagePaths'] ?? []));
       case documentSummary:
-        final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(builder: (_) => DocumentSummaryScreen(extractedText: args['extractedText']));
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        return MaterialPageRoute(builder: (_) => DocumentSummaryScreen(extractedText: args['extractedText'] ?? ''));
       case documents:
         return MaterialPageRoute(builder: (_) => const DocumentsScreen());
       case feedback:
