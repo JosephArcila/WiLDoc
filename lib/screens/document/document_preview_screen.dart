@@ -33,41 +33,48 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
   }
 
   Future<void> _handleConfirm() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.documentSummary,
-        arguments: {'extractedText': extractedText},
-      );
-    } else {
-      Navigator.pushNamed(
-        context,
-        AppRoutes.login,
-        arguments: {'redirectTo': AppRoutes.documentSummary, 'extractedText': extractedText},
-      );
-    }
-  }
+  final User? user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    // Show a loading indicator while text extraction is in progress
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
 
-  Future<void> _extractTextFromFirstImage() async {
-    try {
-      if (_imagePaths.isNotEmpty) {
-        final promise = js.context.callMethod('extractTextFromImage', [_imagePaths[0]]);
-        final text = await promiseToFuture(promise);
-        if (mounted) {
-          setState(() {
-            extractedText = text;
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          extractedText = 'Failed to extract text: $e';
-        });
-      }
-    }
+    // Await text extraction
+    final extractedText = await _extractTextFromFirstImage();
+
+    // Hide the loading indicator
+    Navigator.pop(context);
+
+    // Navigate to the summary screen with the extracted text
+    Navigator.pushReplacementNamed(
+      context,
+      AppRoutes.documentSummary,
+      arguments: {'extractedText': extractedText},
+    );
+  } else {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.login,
+      arguments: {'redirectTo': AppRoutes.documentSummary},
+    );
   }
+}
+
+  Future<String> _extractTextFromFirstImage() async {
+  try {
+    if (_imagePaths.isNotEmpty) {
+      final promise = js.context.callMethod('extractTextFromImage', [_imagePaths[0]]);
+      final text = await promiseToFuture(promise);
+      return text;
+    }
+  } catch (e) {
+    return 'Failed to extract text: $e';
+  }
+  return '';
+}
 
   Future<String> promiseToFuture(js.JsObject promise) {
     final completer = Completer<String>();
