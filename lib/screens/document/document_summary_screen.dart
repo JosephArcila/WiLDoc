@@ -1,10 +1,8 @@
-// /Users/joseph/projects/wil_doc/lib/screens/document/document_summary_screen.dart
 import 'package:flutter/material.dart';
+import 'package:wil_doc/utils/temp_data.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
-  final String extractedText;
-
-  const DocumentSummaryScreen({super.key, required this.extractedText});
+  const DocumentSummaryScreen({super.key});
 
   @override
   DocumentSummaryScreenState createState() => DocumentSummaryScreenState();
@@ -12,11 +10,13 @@ class DocumentSummaryScreen extends StatefulWidget {
 
 class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String extractedText = '';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    extractedText = TempData.extractedText ?? '';
   }
 
   @override
@@ -58,7 +58,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(widget.extractedText),
+              child: Text(extractedText),
             ),
           ),
           const Center(child: Text('Translation screen')),

@@ -27,9 +27,9 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case login:
-        final args = settings.arguments as Map<String, dynamic>? ?? {};
-        final redirectTo = args['redirectTo'] as String?;
-        return MaterialPageRoute(builder: (_) => LoginScreen(redirectTo: redirectTo));
+      final args = settings.arguments as Map<String, dynamic>? ?? {};
+      final redirectTo = args['redirectTo'] as String?;
+      return MaterialPageRoute(builder: (_) => LoginScreen(redirectTo: redirectTo));
       case register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case account:
@@ -44,8 +44,7 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>? ?? {};
         return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePaths: args['imagePaths'] ?? []));
       case documentSummary:
-        final args = settings.arguments as Map<String, dynamic>? ?? {};
-        return MaterialPageRoute(builder: (_) => DocumentSummaryScreen(extractedText: args['extractedText'] ?? ''));
+      return MaterialPageRoute(builder: (_) => const DocumentSummaryScreen());
       case documents:
         return MaterialPageRoute(builder: (_) => const DocumentsScreen());
       case feedback:
