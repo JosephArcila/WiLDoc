@@ -77,61 +77,53 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
         centerTitle: false,
         title: const Text('Document Preview'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: AspectRatio(
-                      aspectRatio: 3 / 4,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(_imagePath),
-                            fit: BoxFit.contain,
-                          ),
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(_imagePath),
+                        fit: BoxFit.contain,
                       ),
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Please confirm that the document is clear and readable.',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      textAlign: TextAlign.center,
-                    ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Please confirm that the document is clear and readable.',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Rescan'),
+                  ),
+                  FilledButton.icon(
+                    onPressed: _handleConfirm,
+                    icon: const Icon(Icons.check),
+                    label: const Text('Confirm'),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Rescan'),
-                ),
-                FilledButton.icon(
-                  onPressed: _handleConfirm,
-                  icon: const Icon(Icons.check),
-                  label: const Text('Confirm'),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
