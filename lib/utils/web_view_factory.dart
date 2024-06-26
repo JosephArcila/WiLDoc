@@ -50,7 +50,35 @@ Future<String> captureFrame() async {
   final html.CanvasElement canvas = html.CanvasElement(width: width, height: height);
   final html.CanvasRenderingContext2D ctx = canvas.getContext('2d') as html.CanvasRenderingContext2D;
   
+  // Draw the original image
   ctx.drawImage(videoElement!, 0, 0);
-  ctx.filter = 'contrast(1.5) brightness(1.2)';
+  
+  // Apply preprocessing
+  applyPreprocessing(ctx, canvas, width, height);
+  
   return canvas.toDataUrl('image/png');
+}
+
+void applyPreprocessing(html.CanvasRenderingContext2D ctx, html.CanvasElement canvas, int width, int height) {
+  // Get the image data
+  var imageData = ctx.getImageData(0, 0, width, height);
+  var data = imageData.data;
+
+  // Convert to grayscale and increase contrast
+  for (var i = 0; i < data.length; i += 4) {
+    var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+    avg = (avg - 128) * 1.5 + 128; // Increase contrast
+    avg = avg.clamp(0, 255);
+    data[i] = avg.round();
+    data[i + 1] = avg.round();
+    data[i + 2] = avg.round();
+  }
+
+  // Apply the processed image data back to the canvas
+  ctx.putImageData(imageData, 0, 0);
+
+  // Apply sharpening
+  ctx.filter = 'contrast(1.2) brightness(1.1) saturate(0) sharpen(1)';
+  ctx.drawImage(canvas, 0, 0);
+  ctx.filter = 'none';
 }
