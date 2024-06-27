@@ -1,3 +1,4 @@
+// /Users/joseph/projects/wil_doc/lib/routes/app_routes.dart
 import 'package:flutter/material.dart';
 import 'package:wil_doc/screens/auth/login_screen.dart';
 import 'package:wil_doc/screens/auth/register_screen.dart';
