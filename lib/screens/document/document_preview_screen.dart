@@ -68,6 +68,13 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     }
   }
 
+  void _rescanAndClearTemp() {
+    // Clear the temporary data
+    TempData.extractedText = null;
+    // Navigate back to the scan document screen
+    Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+  }
+
   Future<html.Blob> _imageToBlob(Image croppedImage) async {
     final completer = Completer<html.Blob>();
     
@@ -156,9 +163,7 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                 alignment: WrapAlignment.center,
                 children: [
                   OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: _rescanAndClearTemp,
                     icon: const Icon(Icons.refresh),
                     label: const Text('Rescan'),
                   ),
