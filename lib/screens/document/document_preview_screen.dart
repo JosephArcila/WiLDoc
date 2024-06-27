@@ -122,6 +122,10 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
       appBar: AppBar(
         centerTitle: false,
         title: const Text('Document Preview'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _rescanAndClearTemp,
+        ),
       ),
       body: SafeArea(
         child: Padding(
