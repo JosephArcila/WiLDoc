@@ -40,8 +40,15 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     );
 
     try {
-      final croppedImage = await controller.croppedImage();
-      final blob = await _imageToBlob(croppedImage);
+      html.Blob blob;
+      if (_isCropping) {
+        final croppedImage = await controller.croppedImage();
+        blob = await _imageToBlob(croppedImage);
+      } else {
+        // If not cropping, use the original image
+        blob = await _networkImageToBlob(_imagePath);
+      }
+      
       final extractedText = await _extractTextFromBlob(blob);
 
       if (mounted) {
@@ -66,6 +73,15 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
         );
       }
     }
+  }
+
+  Future<html.Blob> _networkImageToBlob(String imageUrl) async {
+    final response = await html.HttpRequest.request(
+      imageUrl,
+      responseType: 'arraybuffer',
+    );
+    final data = response.response as ByteBuffer;
+    return html.Blob([data], 'image/png');
   }
 
   void _rescanAndClearTemp() {
