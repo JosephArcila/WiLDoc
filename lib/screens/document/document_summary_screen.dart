@@ -15,7 +15,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     extractedText = TempData.extractedText ?? '';
   }
 
@@ -42,10 +42,6 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
               text: 'Translation',
               icon: Icon(_tabController.index == 1 ? Icons.translate : Icons.translate_outlined),
             ),
-            Tab(
-              text: 'Guide',
-              icon: Icon(_tabController.index == 2 ? Icons.support : Icons.support_outlined),
-            ),
           ],
           onTap: (index) {
             setState(() {});
@@ -62,7 +58,6 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
             ),
           ),
           const Center(child: Text('Translation screen')),
-          const Center(child: Text('Guide screen')),
         ],
       ),
     );
