@@ -1,7 +1,6 @@
-// /Users/joseph/projects/wil_doc/lib/screens/document/document_summary_screen.dart
 import 'package:flutter/material.dart';
 import 'package:wil_doc/utils/temp_data.dart';
-import 'package:wil_doc/routes/app_routes.dart';
+import 'package:wil_doc/services/langchain_openai_service.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -13,12 +12,16 @@ class DocumentSummaryScreen extends StatefulWidget {
 class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String extractedText = '';
+  String translatedText = '';
+  bool isTranslating = false;
+  late OpenAIService _openAIService;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     extractedText = TempData.extractedText ?? '';
+    _openAIService = OpenAIService(); // Remove the argument here
   }
 
   @override
@@ -27,11 +30,29 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     super.dispose();
   }
 
-  void _resolveAndScanNew() {
-    // Clear the temporary data
-    TempData.extractedText = null;
-    // Navigate back to the scan document screen
-    Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+
+  Future<void> _translateText() async {
+    if (!mounted) return;
+    setState(() {
+      isTranslating = true;
+    });
+
+    try {
+      final translated = await _openAIService.translateText(extractedText, 'English');
+      if (!mounted) return;
+      setState(() {
+        translatedText = translated;
+        isTranslating = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        isTranslating = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Translation failed: $e')),
+      );
+    }
   }
 
   @override
@@ -54,6 +75,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           ],
           onTap: (index) {
             setState(() {});
+            if (index == 1 && translatedText.isEmpty && !isTranslating) {
+              _translateText();
+            }
           },
         ),
       ),
@@ -61,20 +85,21 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         controller: _tabController,
         children: [
           Center(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Text(extractedText),
             ),
           ),
-          const Center(child: Text('Translation screen')),
+          Center(
+            child: isTranslating
+                ? const CircularProgressIndicator()
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(translatedText.isEmpty ? 'Tap to translate' : translatedText),
+                  ),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _resolveAndScanNew,
-        label: const Text('Resolve'),
-        icon: const Icon(Icons.check),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

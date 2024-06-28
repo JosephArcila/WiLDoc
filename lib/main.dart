@@ -1,4 +1,3 @@
-// /Users/joseph/projects/wil_doc/lib/main.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,9 +6,12 @@ import 'package:wil_doc/providers/user_provider.dart';
 import 'package:wil_doc/utils/theme.dart';
 import 'package:wil_doc/utils/web_view_factory.dart';
 import 'package:wil_doc/routes/app_routes.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await dotenv.load(fileName: ".env");
   
   await Firebase.initializeApp(
     options: const FirebaseOptions(
@@ -27,7 +29,6 @@ void main() async {
     print("Firebase initialized");
   }
 
-  // Register the camera plugin view
   registerWebViewFactory();
 
   runApp(
@@ -53,4 +54,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
