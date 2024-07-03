@@ -29,4 +29,25 @@ class OpenAIService {
       throw Exception('Translation failed: $e');
     }
   }
+
+  Future<String> summarizeText(String text) async {
+    try {
+      final prompt = PromptTemplate.fromTemplate(
+        'Summarize the following text concisely:\n\n{text}'
+      );
+      
+      final chain = LLMChain(
+        prompt: prompt,
+        llm: _openAI,
+      );
+
+      final response = await chain.run({
+        'text': text,
+      });
+
+      return response.trim();
+    } catch (e) {
+      throw Exception('Summarization failed: $e');
+    }
+  }
 }
