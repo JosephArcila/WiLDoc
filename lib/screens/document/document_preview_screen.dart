@@ -21,10 +21,9 @@ class DocumentPreviewScreen extends StatefulWidget {
 }
 
 class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
-  late String _imagePath;
-  String extractedText = "Extracting text...";
+  late final String _imagePath;
+  final String extractedText = "Extracting text...";
   final controller = CropController();
-  bool _isCropping = false;
 
   @override
   void initState() {
@@ -40,15 +39,8 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     );
 
     try {
-      html.Blob blob;
-      if (_isCropping) {
-        final croppedImage = await controller.croppedImage();
-        blob = await _imageToBlob(croppedImage);
-      } else {
-        // If not cropping, use the original image
-        blob = await _networkImageToBlob(_imagePath);
-      }
-      
+      final croppedImage = await controller.croppedImage();
+      final blob = await _imageToBlob(croppedImage);
       final extractedText = await _extractTextFromBlob(blob);
 
       if (mounted) {
@@ -75,19 +67,8 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     }
   }
 
-  Future<html.Blob> _networkImageToBlob(String imageUrl) async {
-    final response = await html.HttpRequest.request(
-      imageUrl,
-      responseType: 'arraybuffer',
-    );
-    final data = response.response as ByteBuffer;
-    return html.Blob([data], 'image/png');
-  }
-
   void _rescanAndClearTemp() {
-    // Clear the temporary data
     TempData.extractedText = null;
-    // Navigate back to the scan document screen
     Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
   }
 
@@ -151,28 +132,15 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 3 / 4,
-                  child: _isCropping
-                      ? CropImage(
-                          controller: controller,
-                          image: Image.network(_imagePath),
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(_imagePath),
-                              fit: BoxFit.contain,
-                            ),
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                  child: CropImage(
+                    controller: controller,
+                    image: Image.network(_imagePath),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
-                _isCropping
-                    ? 'Crop the image to focus on the document'
-                    : 'Please confirm that the document is clear and readable.',
+                'Crop the image to focus on the document for better accuracy',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -187,30 +155,10 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                     icon: const Icon(Icons.refresh),
                     label: const Text('Rescan'),
                   ),
-                  if (!_isCropping)
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _isCropping = true;
-                        });
-                      },
-                      icon: const Icon(Icons.crop),
-                      label: const Text('Crop'),
-                    ),
-                  if (_isCropping)
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _isCropping = false;
-                        });
-                      },
-                      icon: const Icon(Icons.close),
-                      label: const Text('Cancel'),
-                    ),
                   FilledButton.icon(
                     onPressed: _handleConfirm,
                     icon: const Icon(Icons.check),
-                    label: const Text('Confirm'),
+                    label: const Text('Confirm Crop'),
                   ),
                 ],
               ),
