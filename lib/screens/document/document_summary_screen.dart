@@ -13,9 +13,9 @@ class DocumentSummaryScreen extends StatefulWidget {
 class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String extractedText = '';
-  String translatedText = '';
+  String explainedText = '';
   String summarizedText = '';
-  bool isTranslating = false;
+  bool isExplaining = false;
   bool isSummarizing = false;
   late OpenAIService _openAIService;
 
@@ -34,26 +34,26 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     super.dispose();
   }
 
-  Future<void> _translateText() async {
+  Future<void> _explainText() async {
     if (!mounted) return;
     setState(() {
-      isTranslating = true;
+      isExplaining = true;
     });
 
     try {
-      final translated = await _openAIService.translateText(extractedText, 'English');
+      final explained = await _openAIService.explainText(extractedText);
       if (!mounted) return;
       setState(() {
-        translatedText = translated;
-        isTranslating = false;
+        explainedText = explained;
+        isExplaining = false;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        isTranslating = false;
+        isExplaining = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Translation failed: $e')),
+        SnackBar(content: Text('Explanation failed: $e')),
       );
     }
   }
@@ -104,14 +104,14 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
               icon: Icon(_tabController.index == 0 ? Icons.summarize : Icons.summarize_outlined),
             ),
             Tab(
-              text: 'Translation',
-              icon: Icon(_tabController.index == 1 ? Icons.translate : Icons.translate_outlined),
+              text: 'Explanation',
+              icon: Icon(_tabController.index == 1 ? Icons.description : Icons.description_outlined),
             ),
           ],
           onTap: (index) {
             setState(() {});
-            if (index == 1 && translatedText.isEmpty && !isTranslating) {
-              _translateText();
+            if (index == 1 && explainedText.isEmpty && !isExplaining) {
+              _explainText();
             }
           },
         ),
@@ -120,7 +120,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         controller: _tabController,
         children: [
           _buildSummaryTab(),
-          _buildTranslationTab(),
+          _buildExplanationTab(),
         ],
       ),
       floatingActionButton: SizedBox(
@@ -169,7 +169,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     );
   }
 
-  Widget _buildTranslationTab() {
+  Widget _buildExplanationTab() {
     return SafeArea(
       child: CustomScrollView(
         slivers: [
@@ -181,16 +181,16 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'English Translation',
+                    'Document Explanation',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  if (isTranslating)
+                  if (isExplaining)
                     const Center(child: CircularProgressIndicator())
                   else
                     Expanded(
                       child: Text(
-                        translatedText.isEmpty ? 'Tap to translate' : translatedText,
+                        explainedText.isEmpty ? 'Tap to explain' : explainedText,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),

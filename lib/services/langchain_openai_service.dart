@@ -8,10 +8,10 @@ class OpenAIService {
   OpenAIService({String? apiKey}) 
   : _openAI = OpenAI(apiKey: apiKey ?? dotenv.env['OPENAI_API_KEY'] ?? '');
 
-  Future<String> translateText(String text, String targetLanguage) async {
+  Future<String> explainText(String text) async {
     try {
       final prompt = PromptTemplate.fromTemplate(
-        'Translate the following text to English:\n\n{text}'
+        'Provide a comprehensive explanation of the following text in simple English, leaving no detail out. Explain as if you\'re talking to someone who is not familiar with the subject, but needs to understand all aspects of the document:\n\n{text}'
       );
       
       final chain = LLMChain(
@@ -20,20 +20,19 @@ class OpenAIService {
       );
 
       final response = await chain.run({
-        'language': targetLanguage,
         'text': text,
       });
 
       return response.trim();
     } catch (e) {
-      throw Exception('Translation failed: $e');
+      throw Exception('Explanation failed: $e');
     }
   }
 
   Future<String> summarizeText(String text) async {
     try {
       final prompt = PromptTemplate.fromTemplate(
-        'Explain the following text in English:\n\n{text}'
+        'Provide a brief summary of the following text, focusing on what the document is about and its main points. Keep it concise, like a short introduction:\n\n{text}'
       );
       
       final chain = LLMChain(
