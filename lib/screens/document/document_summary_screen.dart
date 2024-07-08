@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wil_doc/utils/temp_data.dart';
 import 'package:wil_doc/services/langchain_openai_service.dart';
 import 'package:wil_doc/routes/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -18,6 +19,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   bool isExplaining = false;
   bool isSummarizing = false;
   late OpenAIService _openAIService;
+
+  final String _feedbackFormUrl = 'https://forms.gle/N3TqDD3Sqno9TPMYA';
 
   @override
   void initState() {
@@ -94,6 +97,18 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     Navigator.pop(context);
   }
 
+  Future<void> _openFeedbackForm() async {
+    final Uri url = Uri.parse(_feedbackFormUrl);
+    if (!await launchUrl(url)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not open feedback form. Please try again later.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,13 +146,27 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           _buildExplanationTab(),
         ],
       ),
-      floatingActionButton: SizedBox(
-        width: 120,
-        child: FloatingActionButton.extended(
-          onPressed: _navigateToScanDocumentScreen,
-          icon: const Icon(Icons.check),
-          label: const Text('Done'),
-        ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            onPressed: _openFeedbackForm,
+            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+            tooltip: 'Provide Feedback',
+            child: const Icon(Icons.feedback_outlined),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: 120,
+            child: FloatingActionButton.extended(
+              onPressed: _navigateToScanDocumentScreen,
+              icon: const Icon(Icons.check),
+              label: const Text('Done'),
+            ),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
