@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wil_doc/utils/temp_data.dart';
 import 'package:wil_doc/services/langchain_openai_service.dart';
+import 'package:wil_doc/routes/app_routes.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -81,6 +82,14 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     }
   }
 
+  void _navigateToScanDocumentScreen() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.scanDocument,
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,6 +123,15 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           _buildTranslationTab(),
         ],
       ),
+      floatingActionButton: SizedBox(
+        width: 120,
+        child: FloatingActionButton.extended(
+          onPressed: _navigateToScanDocumentScreen,
+          icon: const Icon(Icons.check),
+          label: const Text('Done'),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

@@ -11,7 +11,7 @@ class OpenAIService {
   Future<String> translateText(String text, String targetLanguage) async {
     try {
       final prompt = PromptTemplate.fromTemplate(
-        'Translate the following text to {language}:\n\n{text}'
+        'Translate the following text to English:\n\n{text}'
       );
       
       final chain = LLMChain(
@@ -33,7 +33,7 @@ class OpenAIService {
   Future<String> summarizeText(String text) async {
     try {
       final prompt = PromptTemplate.fromTemplate(
-        'Summarize the following text concisely:\n\n{text}'
+        'Explain the following text in English:\n\n{text}'
       );
       
       final chain = LLMChain(
