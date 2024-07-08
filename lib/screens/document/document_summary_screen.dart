@@ -90,12 +90,20 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     );
   }
 
+  void _navigateToDocumentPreviewScreen() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         title: const Text('Document Scan'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _navigateToDocumentPreviewScreen,
+        ),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
