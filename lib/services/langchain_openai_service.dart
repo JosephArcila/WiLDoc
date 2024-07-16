@@ -5,7 +5,7 @@ class OpenAIService {
   final OpenAI _openAI;
 
   OpenAIService() 
-  : _openAI = OpenAI(apiKey: 'sk-proj-vNqUPXzCVbDrdcZv3m61T3BlbkFJ4UQv6e2PNGtCJXpoS5RF');
+  : _openAI = OpenAI(apiKey: 'sk-None-eKLfQgXH4Iw3Ry5ZUa0zT3BlbkFJoAu9tOSoDVWOqqXHT0ET');
 
   Future<String> explainText(String text) async {
     try {

@@ -54,12 +54,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       if (!mounted) return;
       setState(() {
         isExplaining = false;
+        explainedText = 'Explanation failed: $e';
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Explanation failed: $e')),
-        );
-      }
     }
   }
 
@@ -80,12 +76,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       if (!mounted) return;
       setState(() {
         isSummarizing = false;
+        summarizedText = 'Summarization failed: $e';
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Summarization failed: $e')),
-        );
-      }
     }
   }
 
@@ -194,6 +186,15 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
+                  Text(
+                    'Extracted Text (Debug):',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    extractedText.isEmpty ? 'No text extracted' : extractedText,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
                   if (isSummarizing)
                     const Center(child: CircularProgressIndicator())
                   else
@@ -226,6 +227,15 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                   Text(
                     'Document Explanation',
                     style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Extracted Text (Debug):',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    extractedText.isEmpty ? 'No text extracted' : extractedText,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
                   if (isExplaining)
