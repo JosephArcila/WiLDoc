@@ -55,9 +55,11 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       setState(() {
         isExplaining = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Explanation failed: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Explanation failed: $e')),
+        );
+      }
     }
   }
 
@@ -79,9 +81,11 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       setState(() {
         isSummarizing = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Summarization failed: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Summarization failed: $e')),
+        );
+      }
     }
   }
 
@@ -100,12 +104,14 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   Future<void> _openFeedbackForm() async {
     final Uri url = Uri.parse(_feedbackFormUrl);
     if (!await launchUrl(url)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not open feedback form. Please try again later.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open feedback form. Please try again later.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
