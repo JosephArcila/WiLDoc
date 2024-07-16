@@ -1,12 +1,11 @@
 import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIService {
   final OpenAI _openAI;
 
-  OpenAIService({String? apiKey}) 
-  : _openAI = OpenAI(apiKey: apiKey ?? dotenv.env['OPENAI_API_KEY'] ?? '');
+  OpenAIService() 
+  : _openAI = OpenAI(apiKey: 'sk-proj-vNqUPXzCVbDrdcZv3m61T3BlbkFJ4UQv6e2PNGtCJXpoS5RF');
 
   Future<String> explainText(String text) async {
     try {
