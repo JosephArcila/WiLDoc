@@ -4,6 +4,7 @@ import 'package:langchain_openai/langchain_openai.dart';
 class OpenAIService {
   final OpenAI _openAI;
 
+  //TODO: Figure out the way to consume the method: getOpenAIKey() to replace this call OpenAI(apiKey: 'sk-None-eKLfQgXH4Iw3Ry5ZUa0zT3BlbkFJoAu9tOSoDVWOqqXHT0ET');
   OpenAIService() 
   : _openAI = OpenAI(apiKey: 'sk-None-eKLfQgXH4Iw3Ry5ZUa0zT3BlbkFJoAu9tOSoDVWOqqXHT0ET');
 

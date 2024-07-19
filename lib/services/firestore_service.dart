@@ -2,13 +2,40 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/user.dart';
 
+
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<String> getOpenAIKey() async {
+    try {
+      var document = await FirebaseFirestore.instance
+          .collection('credentials')
+          .doc('GPTKey')
+          .get();
+
+      if (document.exists) {
+        // If the document exists in Firestore
+        var data = document.data();
+        // Check if 'key' exists before trying to access it
+        if (data?['key'] != null) {
+          return data?['key'] as String;
+        } else {
+          throw Exception('Key does not exist in GPTKey document.');
+        }
+      } else {
+        // If the document does not exist in Firestore
+        throw Exception('GPTKey document does not exist in Firestore.');
+      }
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to load API Key: $e');
+    }
+  }
 
   Future<void> saveUser(User user) async {
     try {
       if (kDebugMode) {
-        print("Attempting to save user: ${user.userId} with data: ${user.toMap()}");
+        print(
+            "Attempting to save user: ${user.userId} with data: ${user.toMap()}");
       }
       await _firestore.collection('users').doc(user.userId).set(user.toMap());
       if (kDebugMode) {
@@ -32,7 +59,8 @@ class FirestoreService {
       if (kDebugMode) {
         print("Attempting to get user: $userId");
       }
-      DocumentSnapshot doc = await _firestore.collection('users').doc(userId).get();
+      DocumentSnapshot doc =
+          await _firestore.collection('users').doc(userId).get();
       if (doc.exists) {
         if (kDebugMode) {
           print("User found: ${doc.id}");
@@ -54,9 +82,13 @@ class FirestoreService {
   Future<void> updateUser(User user) async {
     try {
       if (kDebugMode) {
-        print("Attempting to update user: ${user.userId} with data: ${user.toMap()}");
+        print(
+            "Attempting to update user: ${user.userId} with data: ${user.toMap()}");
       }
-      await _firestore.collection('users').doc(user.userId).update(user.toMap());
+      await _firestore
+          .collection('users')
+          .doc(user.userId)
+          .update(user.toMap());
       if (kDebugMode) {
         print("User updated successfully: ${user.userId}");
       }
