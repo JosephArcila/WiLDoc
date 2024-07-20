@@ -14,9 +14,7 @@ class FirestoreService {
           .get();
 
       if (document.exists) {
-        // If the document exists in Firestore
         var data = document.data();
-        // Check if 'key' exists before trying to access it
         if (data?['key'] != null) {
           return data?['key'] as String;
         } else {
