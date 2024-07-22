@@ -22,7 +22,6 @@ class DocumentPreviewScreen extends StatefulWidget {
 
 class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
   late final String _imagePath;
-  final String extractedText = "Extracting text...";
   late final CropController controller;
 
   @override

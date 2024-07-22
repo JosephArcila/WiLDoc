@@ -11,7 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   cupertino_icons: ^1.0.6
   firebase_core: ^2.31.1
   google_fonts: ^6.2.1
@@ -28,8 +27,8 @@ dependencies:
   image_cropper_for_web: ^5.0.4
   image_cropper_platform_interface: ^6.0.3
   crop_image: ^1.0.13
-  langchain_openai: ^0.6.2
-  langchain: ^0.7.2
+  langchain_openai: ^0.6.3
+  langchain: ^0.7.3
   flutter_dotenv: ^5.1.0
   url_launcher: ^6.3.0
 
@@ -40,7 +39,6 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
-
   uses-material-design: true
   assets:
     - .env
