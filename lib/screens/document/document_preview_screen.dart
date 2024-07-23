@@ -1,39 +1,17 @@
 import 'dart:async';
-import 'dart:ui' as ui;
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:js' as js;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/utils/temp_data.dart';
-import 'package:crop_image/crop_image.dart';
 
-class DocumentPreviewScreen extends StatefulWidget {
-  final List<String> imagePaths;
+class DocumentPreviewScreen extends StatelessWidget {
+  final String imagePath;
 
-  const DocumentPreviewScreen({super.key, required this.imagePaths});
+  const DocumentPreviewScreen({super.key, required this.imagePath});
 
-  @override
-  DocumentPreviewScreenState createState() => DocumentPreviewScreenState();
-}
-
-class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
-  late final String _imagePath;
-  late final CropController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _imagePath = widget.imagePaths.first;
-    controller = CropController(
-      defaultCrop: const Rect.fromLTRB(0.1, 0.1, 0.9, 0.9),
-    );
-  }
-
-  Future<void> _handleConfirm() async {
+  Future<void> _handleConfirm(BuildContext context) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -41,18 +19,19 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     );
 
     try {
-      final croppedImage = await controller.croppedImage();
-      final blob = await _imageToBlob(croppedImage);
-      final extractedText = await _extractTextFromBlob(blob);
+      print('Starting text extraction...');
+      print('Image path: $imagePath');
+      final extractedText = await _extractTextFromImage(imagePath);
+      print('Extracted text: $extractedText');
 
-      if (mounted) {
+      if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
       }
 
       TempData.extractedText = extractedText;
 
       final User? user = FirebaseAuth.instance.currentUser;
-      if (mounted) {
+      if (context.mounted) {
         if (user != null) {
           Navigator.pushReplacementNamed(context, AppRoutes.documentSummary);
         } else {
@@ -60,7 +39,8 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      print('Error during text extraction: $e');
+      if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error processing image: $e')),
@@ -69,41 +49,22 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
     }
   }
 
-  void _rescanAndClearTemp() {
+  void _rescanAndClearTemp(BuildContext context) {
     TempData.extractedText = null;
     Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
   }
 
-  Future<html.Blob> _imageToBlob(Image croppedImage) async {
-    final completer = Completer<html.Blob>();
-    
-    final imageProvider = croppedImage.image;
-    final imageStream = imageProvider.resolve(ImageConfiguration.empty);
-    imageStream.addListener(ImageStreamListener((ImageInfo imageInfo, bool synchronousCall) async {
-      final byteData = await imageInfo.image.toByteData(format: ui.ImageByteFormat.png);
-      if (byteData != null) {
-        final buffer = byteData.buffer;
-        final blob = html.Blob([Uint8List.view(buffer)], 'image/png');
-        completer.complete(blob);
-      } else {
-        completer.completeError('Failed to convert image to ByteData');
-      }
-    }, onError: (dynamic error, StackTrace? stackTrace) {
-      completer.completeError('Failed to load image: $error');
-    }));
-
-    return completer.future;
-  }
-
-  Future<String> _extractTextFromBlob(html.Blob blob) async {
-    final reader = html.FileReader();
-    reader.readAsDataUrl(blob);
-    await reader.onLoad.first;
-    
-    final dataUrl = reader.result as String;
-    final promise = js.context.callMethod('extractTextFromImage', [dataUrl]);
-    final text = await promiseToFuture(promise);
-    return text;
+  Future<String> _extractTextFromImage(String imageDataUrl) async {
+    try {
+      print('Calling extractTextFromImage JavaScript function...');
+      final promise = js.context.callMethod('extractTextFromImage', [imageDataUrl]);
+      final text = await promiseToFuture(promise);
+      print('Text extraction completed successfully');
+      return text;
+    } catch (e) {
+      print('Error in _extractTextFromImage: $e');
+      return 'Failed to extract text: $e';
+    }
   }
 
   Future<String> promiseToFuture(js.JsObject promise) {
@@ -123,7 +84,7 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
         title: const Text('Document Preview'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: _rescanAndClearTemp,
+          onPressed: () => _rescanAndClearTemp(context),
         ),
       ),
       body: SafeArea(
@@ -132,34 +93,13 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
           child: Column(
             children: [
               Text(
-                'Crop the image to focus on the text for better accuracy',
+                'Preview your document and confirm to process',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: AspectRatio(
-                  aspectRatio: 3 / 4,
-                  child: CropImage(
-                    controller: controller,
-                    image: Image.network(_imagePath),
-                    gridColor: Colors.white,
-                    gridInnerColor: Colors.white.withOpacity(0.8),
-                    gridCornerColor: Colors.blue,
-                    gridCornerSize: 50,
-                    gridThinWidth: 3,
-                    gridThickWidth: 6,
-                    scrimColor: Colors.black.withOpacity(0.3),
-                    alwaysShowThirdLines: true,
-                    minimumImageSize: 100,
-                    onCrop: (rect) {
-                      // You can use this callback to get the crop rectangle
-                      if (kDebugMode) {
-                        print('Crop rectangle: $rect');
-                      }
-                    },
-                  ),
-                ),
+                child: Image.network(imagePath, fit: BoxFit.contain),
               ),
               const SizedBox(height: 16),
               Wrap(
@@ -168,14 +108,14 @@ class DocumentPreviewScreenState extends State<DocumentPreviewScreen> {
                 alignment: WrapAlignment.center,
                 children: [
                   OutlinedButton.icon(
-                    onPressed: _rescanAndClearTemp,
+                    onPressed: () => _rescanAndClearTemp(context),
                     icon: const Icon(Icons.refresh),
                     label: const Text('Rescan'),
                   ),
                   FilledButton.icon(
-                    onPressed: _handleConfirm,
-                    icon: const Icon(Icons.crop_free),
-                    label: const Text('Crop'),
+                    onPressed: () => _handleConfirm(context),
+                    icon: const Icon(Icons.check),
+                    label: const Text('Confirm'),
                   ),
                 ],
               ),

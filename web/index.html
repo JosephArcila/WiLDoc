@@ -51,16 +51,22 @@
   </script>
 
   <!-- Tesseract.js -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
-  <script>
-    async function extractTextFromImage(imageUrl) {
-      const { Tesseract } = window;
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2/dist/tesseract.min.js"></script>
+<script>
+  window.extractTextFromImage = async function(imageUrl) {
+    try {
+      console.log('Starting text extraction...');
       const result = await Tesseract.recognize(imageUrl, 'jpn', {
         logger: m => console.log(m)
       });
+      console.log('Text extraction completed');
       return result.data.text;
+    } catch (error) {
+      console.error('Tesseract error:', error);
+      return 'Error: ' + error.message;
     }
-  </script>
+  }
+</script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

@@ -27,6 +27,10 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     extractedText = TempData.extractedText ?? '';
+    print('Extracted text in DocumentSummaryScreen: $extractedText');
+    if (extractedText.isEmpty) {
+      print('Warning: No extracted text available');
+    }
     _openAIService = OpenAIService();
     _summarizeText();
   }
@@ -56,6 +60,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         isExplaining = false;
         explainedText = 'Explanation failed: $e';
       });
+      print('Error during explanation: $e');
     }
   }
 
@@ -78,6 +83,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         isSummarizing = false;
         summarizedText = 'Summarization failed: $e';
       });
+      print('Error during summarization: $e');
     }
   }
 
