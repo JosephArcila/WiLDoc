@@ -42,7 +42,7 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('WiLDocPopo'),
+        title: const Text('WiLDoc'),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
