@@ -7,7 +7,6 @@ import 'package:wil_doc/screens/auth/profilesetup_screen.dart';
 import 'package:wil_doc/screens/home/scan_document_screen.dart';
 import 'package:wil_doc/screens/document/document_preview_screen.dart';
 import 'package:wil_doc/screens/document/document_summary_screen.dart';
-import 'package:wil_doc/screens/feedback/feedback_screen.dart';
 
 class AppRoutes {
   static const String login = '/login';
@@ -44,8 +43,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => DocumentPreviewScreen(imagePath: imagePath));
       case documentSummary:
         return MaterialPageRoute(builder: (_) => const DocumentSummaryScreen());
-      case feedback:
-        return MaterialPageRoute(builder: (_) => const FeedbackScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
