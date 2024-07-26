@@ -1,10 +1,11 @@
 import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
+import 'package:translator/translator.dart';
 import '../services/firestore_service.dart';
 
 class OpenAIService {
   late Future<OpenAI> _openAI;
-
+  final GoogleTranslator translator = new GoogleTranslator();
   final FirestoreService firestoreService = FirestoreService();
 
   OpenAIService() {
@@ -14,6 +15,15 @@ class OpenAIService {
   Future<OpenAI> _initializeOpenAI() async {
     var storeResult = await firestoreService.getOpenAIKey();
     return OpenAI(apiKey: storeResult);
+  }
+
+  Future<String> translateText(String text, String languageKey) async {
+    try {
+      final translatedText = await translator.translate(text, to: languageKey);
+      return translatedText.text;
+    } catch (e) {
+      throw Exception('Translation failed: $e');
+    }
   }
 
   Future<String> explainText(String text) async {
