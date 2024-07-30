@@ -116,24 +116,28 @@ class DocumentPreviewScreen extends StatelessWidget {
               Expanded(
                 child: Image.network(imagePath, fit: BoxFit.contain),
               ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
+              const SizedBox(height: 32), // Increased space above buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  OutlinedButton.icon(
-                    onPressed: () => _rescanAndClearTemp(context),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Rescan'),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _rescanAndClearTemp(context),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Rescan'),
+                    ),
                   ),
-                  FilledButton.icon(
-                    onPressed: () => _handleConfirm(context),
-                    icon: const Icon(Icons.check),
-                    label: const Text('Confirm'),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () => _handleConfirm(context),
+                      icon: const Icon(Icons.check),
+                      label: const Text('Confirm'),
+                    ),
                   ),
                 ],
               ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 16), // Space below buttons
             ],
           ),
         ),

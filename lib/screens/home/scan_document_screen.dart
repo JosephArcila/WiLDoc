@@ -58,10 +58,13 @@ class _ScanDocumentScreenState extends State<ScanDocumentScreen> {
           child: HtmlElementView(viewType: 'plugins.flutter.io/camera_1'),
         ),
       ),
-      floatingActionButton: FloatingActionButton.large(
-        onPressed: _takePicture,
-        tooltip: 'Take Picture',
-        child: const Icon(Icons.camera_alt),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
+        child: FloatingActionButton.large(
+          onPressed: _takePicture,
+          tooltip: 'Take Picture',
+          child: const Icon(Icons.camera_alt),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

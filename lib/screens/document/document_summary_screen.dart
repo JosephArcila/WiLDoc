@@ -164,27 +164,30 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           _buildExplanationTab(),
         ],
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
-            onPressed: _openFeedbackForm,
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-            foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-            tooltip: 'Provide Feedback',
-            child: const Icon(Icons.feedback_outlined),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: 120,
-            child: FloatingActionButton.extended(
-              onPressed: _navigateToScanDocumentScreen,
-              icon: const Icon(Icons.check),
-              label: const Text('Done'),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            FloatingActionButton.small(
+              onPressed: _openFeedbackForm,
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              tooltip: 'Provide Feedback',
+              child: const Icon(Icons.feedback_outlined),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 120,
+              child: FloatingActionButton.extended(
+                onPressed: _navigateToScanDocumentScreen,
+                icon: const Icon(Icons.check),
+                label: const Text('Done'),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
