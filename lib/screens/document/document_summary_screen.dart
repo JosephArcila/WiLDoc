@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wil_doc/utils/temp_data.dart';
 import 'package:wil_doc/services/langchain_openai_service.dart';
 import 'package:wil_doc/routes/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:universal_html/html.dart' as html;
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -20,16 +22,18 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   bool isSummarizing = false;
   late OpenAIService _openAIService;
 
-  final String _feedbackFormUrl = 'https://forms.gle/N3TqDD3Sqno9TPMYA';
+  final String _feedbackFormUrl = 'https://forms.gle/ALJHjrvNu5aCnRsA7';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     extractedText = TempData.extractedText ?? '';
-    print('Extracted text in DocumentSummaryScreen: $extractedText');
-    if (extractedText.isEmpty) {
-      print('Warning: No extracted text available');
+    if (kDebugMode) {
+      print('Extracted text in DocumentSummaryScreen: $extractedText');
+      if (extractedText.isEmpty) {
+        print('Warning: No extracted text available');
+      }
     }
     _openAIService = OpenAIService();
     _summarizeText();
@@ -60,7 +64,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         isExplaining = false;
         explainedText = 'Explanation failed: $e';
       });
-      print('Error during explanation: $e');
+      if (kDebugMode) {
+        print('Error during explanation: $e');
+      }
     }
   }
 
@@ -83,7 +89,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         isSummarizing = false;
         summarizedText = 'Summarization failed: $e';
       });
-      print('Error during summarization: $e');
+      if (kDebugMode) {
+        print('Error during summarization: $e');
+      }
     }
   }
 
@@ -100,15 +108,21 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   }
 
   Future<void> _openFeedbackForm() async {
-    final Uri url = Uri.parse(_feedbackFormUrl);
-    if (!await launchUrl(url)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open feedback form. Please try again later.'),
-            duration: Duration(seconds: 3),
-          ),
-        );
+    if (kIsWeb) {
+      html.window.open(_feedbackFormUrl, '_blank');
+    } else {
+      final Uri url = Uri.parse(_feedbackFormUrl);
+      if (await url_launcher.canLaunchUrl(url)) {
+        await url_launcher.launchUrl(url, mode: url_launcher.LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open feedback form. Please try again later.'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       }
     }
   }
@@ -192,15 +206,17 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Extracted Text (Debug):',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    extractedText.isEmpty ? 'No text extracted' : extractedText,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
+                  if (kDebugMode) ...[
+                    Text(
+                      'Extracted Text (Debug):',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   if (isSummarizing)
                     const Center(child: CircularProgressIndicator())
                   else
@@ -235,15 +251,17 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Extracted Text (Debug):',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    extractedText.isEmpty ? 'No text extracted' : extractedText,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
+                  if (kDebugMode) ...[
+                    Text(
+                      'Extracted Text (Debug):',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   if (isExplaining)
                     const Center(child: CircularProgressIndicator())
                   else
