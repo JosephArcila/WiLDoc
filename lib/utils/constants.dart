@@ -281,6 +281,30 @@ const List<String> prefectureList = [
   "Okinawa"
 ];
 
+// List of language preferences
+const List<String> languagePreferenceList = [
+  'English',
+  'Japanese',
+  'Simplified Chinese',
+  'Traditional Chinese',
+  'Korean',
+  'Vietnamese',
+  'Filipino',
+  'Portuguese',
+  'Spanish',
+  'French',
+  'German',
+  'Italian',
+  'Russian',
+  'Thai',
+  'Indonesian',
+  'Nepali',
+  'Hindi',
+  'Bengali',
+  'Urdu',
+  'Arabic',
+];
+
 
 // List of Japanese proficiency levels
 const List<String> proficiencyList = [

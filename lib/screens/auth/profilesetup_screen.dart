@@ -24,68 +24,67 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final TextEditingController _prefectureController = TextEditingController();
   final TextEditingController _wardController = TextEditingController();
   final TextEditingController _japaneseProficiencyController = TextEditingController();
+  final TextEditingController _languagePreferenceController = TextEditingController();
   String? selectedNationality;
   String? selectedVisaStatus;
   DateTime? selectedVisaExpiration;
   String? selectedPrefecture;
   String? selectedWard;
   String? selectedProficiency;
+  String? selectedLanguagePreference;
 
   Future<void> _completeProfile() async {
-  if (kDebugMode) {
-    print("Complete profile method called");
-  }
-
-  // Check if the current user is signed in
-  final currentUser = FirebaseAuth.instance.currentUser;
-  if (currentUser == null) {
     if (kDebugMode) {
-      print("No user is signed in.");
+      print("Complete profile method called");
     }
-    return;
-  }
 
-  // Ensure required fields are not null
-  if (selectedNationality == null ||
-      selectedVisaStatus == null ||
-      selectedPrefecture == null ||
-      selectedProficiency == null) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      if (kDebugMode) {
+        print("No user is signed in.");
+      }
+      return;
+    }
+
+    if (selectedNationality == null ||
+        selectedVisaStatus == null ||
+        selectedPrefecture == null ||
+        selectedProficiency == null ||
+        selectedLanguagePreference == null) {
+      if (kDebugMode) {
+        print("One or more required fields are not selected.");
+      }
+      return;
+    }
+
+    final wardList = getWardList(selectedPrefecture!);
+    final hasWards = wardList.isNotEmpty;
+
+    if (hasWards && selectedWard == null) {
+      if (kDebugMode) {
+        print("Ward is required for the selected prefecture.");
+      }
+      return;
+    }
+
     if (kDebugMode) {
-      print("One or more required fields are not selected.");
+      print("Creating user model");
     }
-    return;
-  }
-
-  // Check if the selected prefecture has wards
-  final wardList = getWardList(selectedPrefecture!);
-  final hasWards = wardList.isNotEmpty;
-
-  // If the prefecture has wards, ensure the ward field is not null
-  if (hasWards && selectedWard == null) {
-    if (kDebugMode) {
-      print("Ward is required for the selected prefecture.");
-    }
-    return;
-  }
-
-  if (kDebugMode) {
-    print("Creating user model");
-  }
-  final user = model.User(
-    userId: currentUser.uid,
-    email: currentUser.email!,
-    password: '',
-    fullName: _fullNameController.text,
-    nationality: selectedNationality!,
-    visaStatus: selectedVisaStatus!,
-    durationOfStay: _visaExpirationController.text,
-    prefecture: selectedPrefecture!,
-    ward: hasWards ? selectedWard! : '',
-    japaneseProficiency: selectedProficiency!,
-    preferredLanguage: 'en',
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
-  );
+    final user = model.User(
+      userId: currentUser.uid,
+      email: currentUser.email!,
+      password: '',
+      fullName: _fullNameController.text,
+      nationality: selectedNationality!,
+      visaStatus: selectedVisaStatus!,
+      durationOfStay: _visaExpirationController.text,
+      prefecture: selectedPrefecture!,
+      ward: hasWards ? selectedWard! : '',
+      japaneseProficiency: selectedProficiency!,
+      preferredLanguage: selectedLanguagePreference!,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
 
     try {
       if (kDebugMode) {
@@ -102,7 +101,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         print("User saved successfully");
       }
 
-      // Navigate to the next screen if the widget is still mounted
       if (mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
       }
@@ -203,6 +201,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               onSelected: (String? proficiency) {
                 setState(() {
                   selectedProficiency = proficiency;
+                });
+              },
+            ),
+            const SizedBox(height: 16.0),
+            LanguagePreferenceDropdown(
+              controller: _languagePreferenceController,
+              selectedLanguagePreference: selectedLanguagePreference,
+              onSelected: (String? language) {
+                setState(() {
+                  selectedLanguagePreference = language;
                 });
               },
             ),
@@ -380,6 +388,30 @@ class ProficiencyDropdown extends StatelessWidget {
       labelText: 'Japanese Proficiency',
       items: proficiencyList,
       selectedValue: selectedProficiency,
+      onSelected: onSelected,
+    );
+  }
+}
+
+class LanguagePreferenceDropdown extends StatelessWidget {
+  final TextEditingController controller;
+  final String? selectedLanguagePreference;
+  final ValueChanged<String?> onSelected;
+
+  const LanguagePreferenceDropdown({
+    super.key,
+    required this.controller,
+    required this.selectedLanguagePreference,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDropdownMenu<String>(
+      controller: controller,
+      labelText: 'Preferred Language',
+      items: languagePreferenceList,
+      selectedValue: selectedLanguagePreference,
       onSelected: onSelected,
     );
   }
