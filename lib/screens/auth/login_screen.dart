@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/widgets/custom_text_field.dart';
+
+import '../../models/user_global.dart';
 
 class LoginScreen extends StatefulWidget {
   final String? redirectTo;
@@ -28,19 +30,24 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-    await _auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, widget.redirectTo ?? AppRoutes.scanDocument);
-    }
-  } on FirebaseAuthException catch (e) {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      UserGlobal().userId = userCredential.user?.uid;
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+            context, widget.redirectTo ?? AppRoutes.scanDocument);
+      }
+    } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       setState(() {
         switch (e.code) {
           case 'user-not-found':
-            _emailError = 'No user found for that email. Check email or register.';
+            _emailError =
+                'No user found for that email. Check email or register.';
             break;
           case 'wrong-password':
             _passwordError = 'Incorrect password. Try again or reset.';
