@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,6 +9,12 @@ import 'package:wil_doc/utils/temp_data.dart';
 import '../../models/user.dart';
 import '../../models/user_global.dart';
 import '../../providers/user_provider.dart';
+import 'package:wil_doc/utils/temp_data.dart';
+import 'package:wil_doc/services/langchain_openai_service.dart';
+import 'package:wil_doc/routes/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:universal_html/html.dart' as html;
+
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -27,16 +34,18 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
   late LanguageService _openAIService;
   late UserProvider userProvider;
 
-  final String _feedbackFormUrl = 'https://forms.gle/N3TqDD3Sqno9TPMYA';
+  final String _feedbackFormUrl = 'https://forms.gle/ALJHjrvNu5aCnRsA7';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     extractedText = TempData.extractedText ?? '';
-    print('Extracted text in DocumentSummaryScreen: $extractedText');
-    if (extractedText.isEmpty) {
-      print('Warning: No extracted text available');
+    if (kDebugMode) {
+      print('Extracted text in DocumentSummaryScreen: $extractedText');
+      if (extractedText.isEmpty) {
+        print('Warning: No extracted text available');
+      }
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initServicesAndSummarize();
@@ -85,7 +94,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
         isExplaining = false;
         explainedText = 'Explanation failed: $e';
       });
-      print('Error during explanation: $e');
+      if (kDebugMode) {
+        print('Error during explanation: $e');
+      }
     }
   }
 
@@ -111,7 +122,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
         isSummarizing = false;
         summarizedText = 'Summarization failed: $e';
       });
-      print('Error during summarization: $e');
+      if (kDebugMode) {
+        print('Error during summarization: $e');
+      }
     }
   }
 
@@ -138,6 +151,21 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
             duration: Duration(seconds: 3),
           ),
         );
+    if (kIsWeb) {
+      html.window.open(_feedbackFormUrl, '_blank');
+    } else {
+      final Uri url = Uri.parse(_feedbackFormUrl);
+      if (await url_launcher.canLaunchUrl(url)) {
+        await url_launcher.launchUrl(url, mode: url_launcher.LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open feedback form. Please try again later.'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       }
     }
   }
@@ -183,27 +211,30 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
           _buildExplanationTab(),
         ],
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
-            onPressed: _openFeedbackForm,
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-            foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-            tooltip: 'Provide Feedback',
-            child: const Icon(Icons.feedback_outlined),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: 120,
-            child: FloatingActionButton.extended(
-              onPressed: _navigateToScanDocumentScreen,
-              icon: const Icon(Icons.check),
-              label: const Text('Done'),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            FloatingActionButton.small(
+              onPressed: _openFeedbackForm,
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              tooltip: 'Provide Feedback',
+              child: const Icon(Icons.feedback_outlined),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 120,
+              child: FloatingActionButton.extended(
+                onPressed: _navigateToScanDocumentScreen,
+                icon: const Icon(Icons.check),
+                label: const Text('Done'),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -225,15 +256,17 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Extracted Text (Debug):',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    extractedText.isEmpty ? 'No text extracted' : extractedText,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
+                  if (kDebugMode) ...[
+                    Text(
+                      'Extracted Text (Debug):',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   if (isSummarizing)
                     const Center(child: CircularProgressIndicator())
                   else
@@ -270,15 +303,17 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Extracted Text (Debug):',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    extractedText.isEmpty ? 'No text extracted' : extractedText,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
+                  if (kDebugMode) ...[
+                    Text(
+                      'Extracted Text (Debug):',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   if (isExplaining)
                     const Center(child: CircularProgressIndicator())
                   else

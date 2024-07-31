@@ -1,6 +1,7 @@
 import 'dart:async';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:js' as js;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wil_doc/routes/app_routes.dart';
@@ -19,10 +20,16 @@ class DocumentPreviewScreen extends StatelessWidget {
     );
 
     try {
-      print('Starting text extraction...');
-      print('Image path: $imagePath');
+      if (kDebugMode) {
+        print('Starting text extraction...');
+      }
+      if (kDebugMode) {
+        print('Image path: $imagePath');
+      }
       final extractedText = await _extractTextFromImage(imagePath);
-      print('Extracted text: $extractedText');
+      if (kDebugMode) {
+        print('Extracted text: $extractedText');
+      }
 
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
@@ -39,7 +46,9 @@ class DocumentPreviewScreen extends StatelessWidget {
         }
       }
     } catch (e) {
-      print('Error during text extraction: $e');
+      if (kDebugMode) {
+        print('Error during text extraction: $e');
+      }
       if (context.mounted) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
@@ -56,13 +65,19 @@ class DocumentPreviewScreen extends StatelessWidget {
 
   Future<String> _extractTextFromImage(String imageDataUrl) async {
     try {
-      print('Calling extractTextFromImage JavaScript function...');
+      if (kDebugMode) {
+        print('Calling extractTextFromImage JavaScript function...');
+      }
       final promise = js.context.callMethod('extractTextFromImage', [imageDataUrl]);
       final text = await promiseToFuture(promise);
-      print('Text extraction completed successfully');
+      if (kDebugMode) {
+        print('Text extraction completed successfully');
+      }
       return text;
     } catch (e) {
-      print('Error in _extractTextFromImage: $e');
+      if (kDebugMode) {
+        print('Error in _extractTextFromImage: $e');
+      }
       return 'Failed to extract text: $e';
     }
   }
@@ -101,24 +116,28 @@ class DocumentPreviewScreen extends StatelessWidget {
               Expanded(
                 child: Image.network(imagePath, fit: BoxFit.contain),
               ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
+              const SizedBox(height: 32), // Increased space above buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  OutlinedButton.icon(
-                    onPressed: () => _rescanAndClearTemp(context),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Rescan'),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _rescanAndClearTemp(context),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Rescan'),
+                    ),
                   ),
-                  FilledButton.icon(
-                    onPressed: () => _handleConfirm(context),
-                    icon: const Icon(Icons.check),
-                    label: const Text('Confirm'),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () => _handleConfirm(context),
+                      icon: const Icon(Icons.check),
+                      label: const Text('Confirm'),
+                    ),
                   ),
                 ],
               ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 16), // Space below buttons
             ],
           ),
         ),
