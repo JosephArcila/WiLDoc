@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'WiLDoc translate customizable',
+      title: 'WiLDoc',
       theme: lightHighContrastTheme,
       initialRoute: AppRoutes.scanDocument,
       onGenerateRoute: AppRoutes.generateRoute,
