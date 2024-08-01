@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/services/language_services.dart';
 import 'package:wil_doc/utils/temp_data.dart';
@@ -9,12 +10,6 @@ import 'package:wil_doc/utils/temp_data.dart';
 import '../../models/user.dart';
 import '../../models/user_global.dart';
 import '../../providers/user_provider.dart';
-import 'package:wil_doc/utils/temp_data.dart';
-import 'package:wil_doc/services/langchain_openai_service.dart';
-import 'package:wil_doc/routes/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
-import 'package:universal_html/html.dart' as html;
-
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -59,10 +54,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
     if (userId != null) {
       await userProvider.loadUser(userId);
       //Now that we have loaded the user, we can initialize AI service and summarize the text
-      _openAIService = LanguageService();
-      _summarizeText();
-    } else {
-      print("Error: User not logged in");
+      var languageService = await LanguageService.create();
+      _openAIService = languageService;
     }
   }
 
@@ -141,27 +134,19 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
   }
 
   Future<void> _openFeedbackForm() async {
-    final Uri url = Uri.parse(_feedbackFormUrl);
-    if (!await launchUrl(url)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content:
-                Text('Could not open feedback form. Please try again later.'),
-            duration: Duration(seconds: 3),
-          ),
-        );
     if (kIsWeb) {
       html.window.open(_feedbackFormUrl, '_blank');
     } else {
       final Uri url = Uri.parse(_feedbackFormUrl);
       if (await url_launcher.canLaunchUrl(url)) {
-        await url_launcher.launchUrl(url, mode: url_launcher.LaunchMode.externalApplication);
+        await url_launcher.launchUrl(url,
+            mode: url_launcher.LaunchMode.externalApplication);
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Could not open feedback form. Please try again later.'),
+              content:
+                  Text('Could not open feedback form. Please try again later.'),
               duration: Duration(seconds: 3),
             ),
           );
@@ -196,10 +181,14 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
                   : Icons.description_outlined),
             ),
           ],
+
           onTap: (index) {
             setState(() {});
             if (index == 1 && explainedText.isEmpty && !isExplaining) {
               _explainText();
+            }
+            if(index == 0 && summarizedText.isEmpty && !isSummarizing){
+              _summarizeText();
             }
           },
         ),
@@ -212,7 +201,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
         ],
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -220,7 +210,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
             FloatingActionButton.small(
               onPressed: _openFeedbackForm,
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              foregroundColor:
+                  Theme.of(context).colorScheme.onSecondaryContainer,
               tooltip: 'Provide Feedback',
               child: const Icon(Icons.feedback_outlined),
             ),
@@ -262,7 +253,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      extractedText.isEmpty
+                          ? 'No text extracted'
+                          : extractedText,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 16),
@@ -309,7 +302,9 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen>
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      extractedText.isEmpty
+                          ? 'No text extracted'
+                          : extractedText,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 16),
