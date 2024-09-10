@@ -96,6 +96,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   }
 
   void _navigateToScanDocumentScreen() {
+    TempData.extractedText = null;
+    TempData.imagePath = null;
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.scanDocument,
@@ -103,9 +105,6 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     );
   }
 
-  void _navigateToDocumentPreviewScreen() {
-    Navigator.pop(context);
-  }
 
   Future<void> _openFeedbackForm() async {
     if (kIsWeb) {
@@ -135,7 +134,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
         title: const Text('Document Scan'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: _navigateToDocumentPreviewScreen,
+          onPressed: _navigateToScanDocumentScreen,
         ),
         bottom: TabBar(
           controller: _tabController,

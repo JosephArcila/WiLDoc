@@ -36,6 +36,7 @@ class DocumentPreviewScreen extends StatelessWidget {
       }
 
       TempData.extractedText = extractedText;
+      TempData.imagePath = imagePath; // Store the image path
 
       final User? user = FirebaseAuth.instance.currentUser;
       if (context.mounted) {
@@ -60,6 +61,7 @@ class DocumentPreviewScreen extends StatelessWidget {
 
   void _rescanAndClearTemp(BuildContext context) {
     TempData.extractedText = null;
+    TempData.imagePath = null;
     Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
   }
 
@@ -116,7 +118,7 @@ class DocumentPreviewScreen extends StatelessWidget {
               Expanded(
                 child: Image.network(imagePath, fit: BoxFit.contain),
               ),
-              const SizedBox(height: 32), // Increased space above buttons
+              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -137,7 +139,7 @@ class DocumentPreviewScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: MediaQuery.of(context).padding.bottom + 16), // Space below buttons
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
             ],
           ),
         ),

@@ -29,13 +29,17 @@ class AppRoutes {
         final redirectTo = args['redirectTo'] as String?;
         return MaterialPageRoute(builder: (_) => LoginScreen(redirectTo: redirectTo));
       case register:
-        return MaterialPageRoute(builder: (_) => const RegisterScreen());
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final redirectTo = args['redirectTo'] as String?;
+        return MaterialPageRoute(builder: (_) => RegisterScreen(redirectTo: redirectTo));
       case account:
         return MaterialPageRoute(builder: (_) => const AccountScreen());
       case resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
       case profilesetup:
-        return MaterialPageRoute(builder: (_) => const ProfileSetupScreen());
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final redirectTo = args['redirectTo'] as String?;
+        return MaterialPageRoute(builder: (_) => ProfileSetupScreen(redirectTo: redirectTo));
       case scanDocument:
         return MaterialPageRoute(builder: (_) => const ScanDocumentScreen());
       case documentPreview:

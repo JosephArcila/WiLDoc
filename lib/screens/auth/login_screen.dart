@@ -5,9 +5,8 @@ import 'package:wil_doc/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   final String? redirectTo;
-  final String? extractedText;
 
-  const LoginScreen({super.key, this.redirectTo, this.extractedText});
+  const LoginScreen({super.key, this.redirectTo});
 
   @override
   LoginScreenState createState() => LoginScreenState();
@@ -28,14 +27,14 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-    await _auth.signInWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, widget.redirectTo ?? AppRoutes.scanDocument);
-    }
-  } on FirebaseAuthException catch (e) {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, widget.redirectTo ?? AppRoutes.scanDocument);
+      }
+    } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       setState(() {
         switch (e.code) {
@@ -83,7 +82,11 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.register);
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.register,
+                      arguments: {'redirectTo': widget.redirectTo},
+                    );
                   },
                   child: Text(
                     'Register',

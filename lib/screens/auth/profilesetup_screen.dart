@@ -6,11 +6,14 @@ import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/widgets/custom_text_field.dart';
 import 'package:wil_doc/widgets/custom_dropdown_menu.dart';
 import 'package:wil_doc/utils/constants.dart';
+import 'package:wil_doc/utils/temp_data.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
-  const ProfileSetupScreen({super.key});
+  final String? redirectTo;
+
+  const ProfileSetupScreen({super.key, this.redirectTo});
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -102,7 +105,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       }
 
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+        if (TempData.imagePath != null) {
+          Navigator.pushReplacementNamed(context, AppRoutes.documentSummary);
+        } else {
+          Navigator.pushReplacementNamed(context, AppRoutes.scanDocument);
+        }
       }
     } catch (e) {
       if (kDebugMode) {

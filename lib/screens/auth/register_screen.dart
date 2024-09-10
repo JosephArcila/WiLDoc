@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wil_doc/routes/app_routes.dart'; // Import the app routes
+import 'package:wil_doc/routes/app_routes.dart';
 import 'package:wil_doc/services/auth_service.dart';
 import 'package:wil_doc/widgets/custom_text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final String? redirectTo;
+
+  const RegisterScreen({super.key, this.redirectTo});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -35,7 +37,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _passwordController.text,
         );
         if (user != null && mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.profilesetup);
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.profilesetup,
+            arguments: {'redirectTo': widget.redirectTo},
+          );
         }
       } on FirebaseAuthException catch (e) {
         if (!mounted) return;
@@ -87,7 +93,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text('Already have an account?', style: theme.textTheme.bodyLarge),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.login); // Use named route
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.login,
+                      arguments: {'redirectTo': widget.redirectTo},
+                    );
                   },
                   child: Text('Sign in', style: TextStyle(color: theme.colorScheme.primary)),
                 ),
