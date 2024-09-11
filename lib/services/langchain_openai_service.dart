@@ -23,13 +23,13 @@ class OpenAIService {
     return OpenAI(apiKey: storeResult);
   }
 
-  Future<AIResponse> explainText(String text) async {
+  Future<AIResponse> explainText(String text, String preferredLanguage) async {
     try {
       final promptTemplate = PromptTemplate.fromTemplate(
-        'Provide a comprehensive explanation of the following text in simple English, leaving no detail out. Explain as if you\'re talking to someone who is not familiar with the subject, but needs to understand all aspects of the document:\n\n{text}'
+        'Provide a comprehensive explanation of the following text in {language}, leaving no detail out. Explain as if you\'re talking to someone who is not familiar with the subject, but needs to understand all aspects of the document:\n\n{text}'
       );
 
-      final prompt = promptTemplate.format({'text': text});
+      final prompt = promptTemplate.format({'language': preferredLanguage, 'text': text});
 
       OpenAI openAIInstance = await _openAI;
       final chain = LLMChain(
@@ -38,6 +38,7 @@ class OpenAIService {
       );
 
       final response = await chain.run({
+        'language': preferredLanguage,
         'text': text,
       });
 
@@ -47,13 +48,13 @@ class OpenAIService {
     }
   }
 
-  Future<AIResponse> summarizeText(String text) async {
+  Future<AIResponse> summarizeText(String text, String preferredLanguage) async {
     try {
       final promptTemplate = PromptTemplate.fromTemplate(
-        'Provide a brief summary of the following text, focusing on what the document is about and its main points. Keep it concise, like a short introduction:\n\n{text}'
+        'Provide a brief summary of the following text in {language}, focusing on what the document is about and its main points. Keep it concise, like a short introduction:\n\n{text}'
       );
 
-      final prompt = promptTemplate.format({'text': text});
+      final prompt = promptTemplate.format({'language': preferredLanguage, 'text': text});
 
       OpenAI openAIInstance = await _openAI;
       final chain = LLMChain(
@@ -62,6 +63,7 @@ class OpenAIService {
       );
 
       final response = await chain.run({
+        'language': preferredLanguage,
         'text': text,
       });
 

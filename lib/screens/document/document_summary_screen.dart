@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wil_doc/utils/temp_data.dart';
 import 'package:wil_doc/services/langchain_openai_service.dart';
 import 'package:wil_doc/routes/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:universal_html/html.dart' as html;
+import 'package:wil_doc/providers/user_provider.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -23,6 +25,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   bool isExplaining = false;
   bool isSummarizing = false;
   late OpenAIService _openAIService;
+  String? userPreferredLanguage;
 
   final String _feedbackFormUrl = 'https://forms.gle/ALJHjrvNu5aCnRsA7';
 
@@ -38,6 +41,15 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       }
     }
     _openAIService = OpenAIService();
+    _getUserPreferredLanguage();
+  }
+
+  void _getUserPreferredLanguage() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userPreferredLanguage = userProvider.user?.preferredLanguage ?? 'English';
+    if (kDebugMode) {
+      print('User preferred language: $userPreferredLanguage');
+    }
     _summarizeText();
   }
 
@@ -54,7 +66,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     });
 
     try {
-      final result = await _openAIService.explainText(extractedText);
+      final result = await _openAIService.explainText(extractedText, userPreferredLanguage ?? 'English');
       if (!mounted) return;
       setState(() {
         explainedText = result.text;
@@ -80,7 +92,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     });
 
     try {
-      final result = await _openAIService.summarizeText(extractedText);
+      final result = await _openAIService.summarizeText(extractedText, userPreferredLanguage ?? 'English');
       if (!mounted) return;
       setState(() {
         summarizedText = result.text;
@@ -129,6 +141,7 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,11 +172,29 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
           },
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _buildSummaryTab(),
-          _buildExplanationTab(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildTabContent(
+                  title: 'Document Summary',
+                  isLoading: isSummarizing,
+                  prompt: summarizePrompt,
+                  generatedText: summarizedText,
+                  loadingText: 'Summarizing...',
+                ),
+                _buildTabContent(
+                  title: 'Document Explanation',
+                  isLoading: isExplaining,
+                  prompt: explainPrompt,
+                  generatedText: explainedText,
+                  loadingText: 'Tap to explain',
+                ),
+              ],
+            ),
+          ),
         ],
       ),
       floatingActionButton: Padding(
@@ -195,7 +226,13 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     );
   }
 
-  Widget _buildSummaryTab() {
+  Widget _buildTabContent({
+    required String title,
+    required bool isLoading,
+    required String prompt,
+    required String generatedText,
+    required String loadingText,
+  }) {
     return SafeArea(
       child: CustomScrollView(
         slivers: [
@@ -207,90 +244,27 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Document Summary',
+                    title,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   if (kDebugMode) ...[
                     Text(
-                      'Extracted Text (Debug):',
+                      'Prompt (Debug):',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Text(
-                      extractedText.isEmpty ? 'No text extracted' : extractedText,
+                      prompt.isEmpty ? 'Prompt not available' : prompt,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 16),
                   ],
-                  Text(
-                    'Summarize Prompt:',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    summarizePrompt.isEmpty ? 'Prompt not available' : summarizePrompt,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
-                  if (isSummarizing)
+                  if (isLoading)
                     const Center(child: CircularProgressIndicator())
                   else
                     Expanded(
                       child: Text(
-                        summarizedText.isEmpty ? 'Summarizing...' : summarizedText,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExplanationTab() {
-    return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Document Explanation',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 16),
-                  if (kDebugMode) ...[
-                    Text(
-                      'Extracted Text (Debug):',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      extractedText.isEmpty ? 'No text extracted' : extractedText,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  Text(
-                    'Explain Prompt:',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  Text(
-                    explainPrompt.isEmpty ? 'Prompt not available' : explainPrompt,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
-                  if (isExplaining)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    Expanded(
-                      child: Text(
-                        explainedText.isEmpty ? 'Tap to explain' : explainedText,
+                        generatedText.isEmpty ? loadingText : generatedText,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
