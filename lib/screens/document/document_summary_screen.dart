@@ -7,6 +7,7 @@ import 'package:wil_doc/routes/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:universal_html/html.dart' as html;
 import 'package:wil_doc/providers/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DocumentSummaryScreen extends StatefulWidget {
   const DocumentSummaryScreen({super.key});
@@ -44,13 +45,32 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     _getUserPreferredLanguage();
   }
 
-  void _getUserPreferredLanguage() {
+  Future<void> _getUserPreferredLanguage() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userPreferredLanguage = userProvider.user?.preferredLanguage ?? 'English';
-    if (kDebugMode) {
-      print('User preferred language: $userPreferredLanguage');
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await userProvider.loadUser(user.uid);
+      setState(() {
+        userPreferredLanguage = userProvider.user?.preferredLanguage;
+      });
+      if (kDebugMode) {
+        print('User preferred language: $userPreferredLanguage');
+      }
+      if (userPreferredLanguage != null) {
+        _summarizeText();
+      } else {
+        setState(() {
+          summarizedText = 'Error: Unable to retrieve user\'s preferred language.';
+        });
+      }
+    } else {
+      if (kDebugMode) {
+        print('Error: No user is currently signed in.');
+      }
+      setState(() {
+        summarizedText = 'Error: No user is currently signed in.';
+      });
     }
-    _summarizeText();
   }
 
   @override
@@ -66,7 +86,10 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     });
 
     try {
-      final result = await _openAIService.explainText(extractedText, userPreferredLanguage ?? 'English');
+      if (userPreferredLanguage == null) {
+        throw Exception('User\'s preferred language is not set.');
+      }
+      final result = await _openAIService.explainText(extractedText, userPreferredLanguage!);
       if (!mounted) return;
       setState(() {
         explainedText = result.text;
@@ -92,7 +115,10 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     });
 
     try {
-      final result = await _openAIService.summarizeText(extractedText, userPreferredLanguage ?? 'English');
+      if (userPreferredLanguage == null) {
+        throw Exception('User\'s preferred language is not set.');
+      }
+      final result = await _openAIService.summarizeText(extractedText, userPreferredLanguage!);
       if (!mounted) return;
       setState(() {
         summarizedText = result.text;
@@ -140,7 +166,6 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
