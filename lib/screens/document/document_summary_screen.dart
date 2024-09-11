@@ -18,6 +18,8 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
   String extractedText = '';
   String explainedText = '';
   String summarizedText = '';
+  String explainPrompt = '';
+  String summarizePrompt = '';
   bool isExplaining = false;
   bool isSummarizing = false;
   late OpenAIService _openAIService;
@@ -52,10 +54,11 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     });
 
     try {
-      final explained = await _openAIService.explainText(extractedText);
+      final result = await _openAIService.explainText(extractedText);
       if (!mounted) return;
       setState(() {
-        explainedText = explained;
+        explainedText = result.text;
+        explainPrompt = result.prompt;
         isExplaining = false;
       });
     } catch (e) {
@@ -77,10 +80,11 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
     });
 
     try {
-      final summarized = await _openAIService.summarizeText(extractedText);
+      final result = await _openAIService.summarizeText(extractedText);
       if (!mounted) return;
       setState(() {
-        summarizedText = summarized;
+        summarizedText = result.text;
+        summarizePrompt = result.prompt;
         isSummarizing = false;
       });
     } catch (e) {
@@ -104,7 +108,6 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
       (route) => false,
     );
   }
-
 
   Future<void> _openFeedbackForm() async {
     if (kIsWeb) {
@@ -219,6 +222,15 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                     ),
                     const SizedBox(height: 16),
                   ],
+                  Text(
+                    'Summarize Prompt:',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    summarizePrompt.isEmpty ? 'Prompt not available' : summarizePrompt,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
                   if (isSummarizing)
                     const Center(child: CircularProgressIndicator())
                   else
@@ -264,6 +276,15 @@ class DocumentSummaryScreenState extends State<DocumentSummaryScreen> with Singl
                     ),
                     const SizedBox(height: 16),
                   ],
+                  Text(
+                    'Explain Prompt:',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    explainPrompt.isEmpty ? 'Prompt not available' : explainPrompt,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
                   if (isExplaining)
                     const Center(child: CircularProgressIndicator())
                   else
