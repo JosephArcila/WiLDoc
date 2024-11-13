@@ -1,6 +1,6 @@
 # WiLDoc - AI-Powered Document Assistance for Foreigners in Japan
 
-![WiLDoc Logo](images/logo.png)
+![WiLDoc Logo](logo.png)
 
 [Live Demo](https://wildocjapan.web.app/) | [GitHub Repository](https://github.com/JosephArcila/WiLDoc)
 
@@ -145,15 +145,15 @@ WiLDoc has demonstrated significant impact in several key areas:
 ## Screenshots
 
 ### Document Scanning
-![Document Scanning](images/scanning.png)
+<img src="scanning.png" alt="Document Scanning" width="300"/>
 *Real-time document scanning interface*
 
 ### Document Analysis
-![Document Analysis](images/analysis.png)
+<img src="analysis.png" alt="Document Analysis" width="300"/>
 *AI-powered document summary and explanation*
 
 ### User Profile
-![User Profile](images/profile.png)
+<img src="profile.png" alt="User Profile" width="300"/>
 *Personalized user profile management*
 
 ## Acknowledgments
